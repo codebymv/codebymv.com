@@ -1,0 +1,416 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Embla Carousel Base Styles */
+.embla {
+  position: relative;
+  padding: 0 1rem;
+  margin: 0 -1rem;
+}
+
+.embla__container {
+  display: flex;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  margin-left: -1rem;
+}
+
+.embla__slide {
+  position: relative;
+  min-width: 0;
+  padding-left: 1rem;
+  flex: 0 0 100%;
+}
+
+@media (min-width: 640px) {
+  .embla__slide {
+    flex: 0 0 50%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .embla__slide {
+    flex: 0 0 33.333%;
+  }
+}
+
+/* Smooth scrolling for the carousel */
+.embla__container {
+  backface-visibility: hidden;
+  display: flex;
+  touch-action: pan-y;
+  margin-left: -1rem;
+}
+
+/* Hide scrollbar but keep functionality */
+.embla::-webkit-scrollbar {
+  display: none;
+}
+.embla {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth transitions for carousel items */
+.embla__slide {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Focus styles for accessibility */
+.embla__slide:focus {
+  outline: 2px solid var(--theme-accent, #3b82f6);
+  outline-offset: 2px;
+}
+
+:root {
+  /* Dark theme colors */
+  --deep-space: #0a1528;
+  --space-white: #F4F7F7;
+  --nebula-purple: #7B506F;
+  --nebula-pink: #EFA8B0;
+  --bright-teal: #1EEFEF;
+  --hover-accent: var(--bright-teal);
+  --theme-accent: var(--bright-teal); /* Theme-dependent accent color */
+  --text-primary: #F4F7F7;
+  --text-secondary: rgba(244, 247, 247, 0.8);
+  --cursor-size: 40px;
+  --card-shadow: rgba(0, 0, 0, 0.15);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --logo-filter: none;
+  
+  /* Performance settings */
+  --animation-speed: 1s; /* Can be adjusted based on device */
+  --enable-blur: 1; /* Can be disabled for low-end devices */
+}
+
+/* Light theme colors */
+.light-theme {
+  --deep-space: #e2e5f0; /* Light blue tint background */
+  --space-white: #c6c6c6; /* Slightly lighter for better contrast */
+  --nebula-purple: #5D4259;
+  --nebula-pink: #ff818f;
+  --bright-teal: #1EEFEF;
+  --hover-accent: var(--nebula-pink);
+  --theme-accent: var(--nebula-pink); /* Theme-dependent accent color */
+  --text-primary: #2E3440; /* Slightly lighter text for better readability */
+  --text-secondary: rgba(46, 52, 64, 0.85); /* Softer secondary text */
+  --card-shadow: rgba(26, 30, 44, 0.08); /* Lighter shadows */
+  --card-bg: rgba(46, 52, 64, 0.06); /* More subtle card backgrounds */
+  --logo-filter: invert(0.85) brightness(0.8) contrast(0.95);
+}
+
+/* Performance-based class for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-speed: 0.1s;
+  }
+  
+  .terminal-text::after {
+    animation: none !important;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Light theme hover overrides */
+.light-theme .hover\:text-bright-teal:hover,
+.light-theme .interactive:hover,
+.light-theme .bg-nebula-pink:hover {
+  color: var(--nebula-pink) !important;
+}
+
+/* Light theme subtitle and secondary text improvements */
+.light-theme .text-space-white,
+.light-theme .text-space-white\/80,
+.light-theme .text-space-white\/90,
+.light-theme .text-secondary {
+  color: #3B4252 !important; /* Darker, more readable text for light mode */
+}
+
+/* Terminal styling - consistent in both themes */
+.font-mono,
+.light-theme .font-mono,
+.dark-theme .font-mono {
+  color: #F4F7F7 !important; /* Always white text */
+  background-color: #0A1128 !important; /* Always dark background */
+  border-color: rgba(123, 80, 111, 0.5); /* Consistent border */
+}
+
+/* Improve card content contrast in light mode */
+.light-theme .bg-white\/5 {
+  background-color: rgba(93, 66, 89, 0.08) !important; /* Slightly tinted background */
+  color: #2E3440 !important; /* Darker text for better readability */
+}
+
+/* Light theme transition smoothing */
+.light-theme body {
+  transition: background-color 0.3s ease, color 0.3s ease; /* Reduced from 0.5s */
+}
+
+/* Dark theme colors */
+.dark-theme {
+  --deep-space: #0A1128;
+  --space-white: #F4F7F7;
+  --nebula-purple: #7B506F;
+  --nebula-pink: #EFA8B0;
+  --bright-teal: #1EEFEF;
+  --hover-accent: var(--bright-teal);
+  --text-primary: #F4F7F7;
+  --text-secondary: rgba(244, 247, 247, 0.8);
+  --card-shadow: rgba(0, 0, 0, 0.18);
+  --card-bg: rgba(255, 255, 255, 0.08);
+  --logo-filter: none;
+}
+
+.logo-image {
+  filter: var(--logo-filter);
+  transition: filter 0.2s ease; /* Reduced from 0.3s */
+}
+
+html {
+  scroll-behavior: smooth;
+  /* cursor: none; */ /* Re-enabled for performance testing */
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background-color: var(--deep-space);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Reduced from 0.5s */
+}
+
+/* Simplified scrollbar for better performance */
+::-webkit-scrollbar {
+  width: 6px; /* Reduced from 8px */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-space);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--nebula-purple);
+  border-radius: 3px; /* Reduced from 4px */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nebula-pink);
+}
+
+.section-container {
+  @apply max-w-7xl mx-auto px-6 sm:px-8 md:px-12 py-24;
+}
+
+.highlight-text {
+  color: var(--theme-accent);
+}
+
+.teal-highlight {
+  color: var(--bright-teal);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.no-cursor {
+  /* cursor: none; */ /* Re-enabled for performance testing */
+}
+
+@media (max-width: 768px) {
+  html {
+    cursor: auto;
+  }
+  
+  .no-cursor {
+    cursor: auto;
+  }
+  
+  /* Reduce animations on mobile */
+  .terminal-text::after {
+    animation-duration: 2s; /* Slower on mobile */
+  }
+}
+
+/* Optimized terminal effect */
+.terminal-text {
+  @apply font-mono;
+  color: var(--bright-teal);
+  position: relative;
+  display: inline-block;
+}
+
+.terminal-text::after {
+  content: "|";
+  position: absolute;
+  right: -4px;
+  animation: blink var(--animation-speed) step-start infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Simplified interactive elements */
+.interactive {
+  transition: all 0.2s ease; /* Reduced from 0.3s */
+}
+
+.interactive:hover {
+  color: var(--hover-accent);
+  transform: scale(1.02); /* Reduced from 1.05 */
+}
+
+/* Optimized button hover styles */
+.work-btn {
+  transition: all 0.2s ease !important; /* Reduced from 0.3s */
+}
+
+.work-btn:hover {
+  background-color: #A23449 !important;
+  color: white !important;
+}
+
+.connect-btn {
+  transition: all 0.2s ease !important; /* Reduced from 0.3s */
+}
+
+.connect-btn:hover {
+  background-color: var(--bright-teal) !important;
+  color: black !important;
+  border-color: var(--bright-teal) !important;
+}
+
+/* Simplified project cards */
+.project-card {
+  @apply relative overflow-hidden rounded-lg transition-all duration-200; /* Reduced from 300ms */
+  background: var(--card-bg);
+  backdrop-filter: blur(calc(var(--enable-blur) * 10px)); /* Can be disabled */
+  box-shadow: 0 4px 6px var(--card-shadow);
+  border: 1px solid rgba(123, 80, 111, 0.2); /* Subtle default border */
+}
+
+.project-card:hover {
+  transform: translateY(-4px); /* Reduced from -8px */
+  box-shadow: 0 8px 25px var(--card-shadow); /* Reduced shadow */
+  border-color: var(--nebula-purple); /* More visible border on hover */
+}
+
+/* Simplified card overlay effect */
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, 
+    rgba(123, 80, 111, 0.1), 
+    rgba(30, 239, 239, 0.15), 
+    rgba(123, 80, 111, 0.1)
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease; /* Reduced from 0.3s */
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+/* Light theme card adjustments */
+.light-theme .project-card {
+  border: 1px solid rgba(93, 66, 89, 0.25); /* Slightly darker border for light theme */
+}
+
+.light-theme .project-card:hover {
+  border-color: var(--nebula-pink); /* Pink border on hover in light theme */
+}
+
+.light-theme .project-card::before {
+  background: linear-gradient(45deg, 
+    rgba(93, 66, 89, 0.1), 
+    rgba(255, 129, 143, 0.15), 
+    rgba(93, 66, 89, 0.1)
+  );
+}
+
+/* Selected card state */
+.project-card[aria-selected="true"] {
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 2px var(--theme-accent);
+}
+
+/* Base nav-bg styles */
+.nav-bg {
+  background-color: rgba(10, 21, 40, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+/* Light theme nav-bg */
+.light-theme .nav-bg {
+  background-color: rgba(226, 229, 240, 0.95); /* Using new #e2e5f0 color */
+}
+
+/* Dark theme nav-bg */
+.dark-theme .nav-bg {
+  background-color: rgba(10, 21, 40, 0.85);
+}
+
+/* Mobile nav-bg adjustments */
+@media (max-width: 768px) {
+  .nav-bg {
+    background-color: rgba(10, 21, 40, 0.95);
+  }
+  
+  .light-theme .nav-bg {
+    background-color: rgba(226, 229, 240, 0.98); /* Using new #e2e5f0 color */
+  }
+  
+  .dark-theme .nav-bg {
+    background-color: rgba(10, 21, 40, 0.95);
+  }
+}
+
+/* Simplified text classes */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-theme-accent {
+  color: var(--theme-accent);
+}
+
+/* Performance utility classes */
+.performance-reduce-motion {
+  animation: none !important;
+  transition: none !important;
+}
+
+.performance-reduce-blur {
+  backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* Low-end device optimizations */
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .project-card {
+    backdrop-filter: none; /* Disable blur on mobile/low-end */
+    background: var(--card-bg);
+  }
+  
+  .nav-bg {
+    backdrop-filter: none; /* Disable blur on mobile/low-end */
+  }
+  
+  .interactive:hover {
+    transform: none; /* Disable transform on mobile */
+  }
+}
