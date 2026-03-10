@@ -5,32 +5,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        'deep-space': '#0A1128',
-        'nebula-purple': '#7B506F',
-        'nebula-pink': '#EFA8B0',
-        'bright-teal': '#1EEFEF',
-        'space-white': '#F4F7F7',
-        'theme-accent': 'var(--theme-accent)',
+        'bg-primary': 'var(--bg-primary)',
+        'bg-elevated': 'var(--bg-elevated)',
+        'bg-subtle': 'var(--bg-subtle)',
+        accent: {
+          DEFAULT: 'var(--accent)',
+          hover: 'var(--accent-hover)',
+          muted: 'var(--accent-muted)',
+        },
+        border: 'var(--border)',
+        'border-strong': 'var(--border-strong)',
+      },
+      textColor: {
+        primary: 'var(--text-primary)',
+        secondary: 'var(--text-secondary)',
+        muted: 'var(--text-muted)',
       },
       fontFamily: {
-        sans: ['Space Grotesk', 'sans-serif'],
-        mono: ['monospace'],
-      },
-      animation: {
-        float: 'float 6s ease-in-out infinite',
-        orbitSlow: 'orbit 30s linear infinite',
-        orbitFast: 'orbit 15s linear infinite',
-        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        orbit: {
-          '0%': { transform: 'rotate(0deg) translateX(100px) rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg) translateX(100px) rotate(-360deg)' },
-        },
+        display: ['"Instrument Serif"', 'serif'],
+        body: ['Outfit', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
     },
   },

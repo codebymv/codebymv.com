@@ -3,155 +3,131 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, Moon, Sun, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
+const navLinks = ['Projects', 'Skills', 'About', 'Contact'];
+
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  
+
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
-  
+
   return (
     <header>
-      <motion.nav 
-        className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 py-4 ${
-          scrolled ? 'nav-bg backdrop-blur-md shadow-lg' : 'bg-transparent'
+      <nav
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+          scrolled
+            ? 'py-3 bg-[color:var(--bg-primary)]/90 backdrop-blur-md border-b border-[color:var(--border)]'
+            : 'py-5 bg-transparent'
         }`}
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <motion.a 
-            href="#home" 
-            className="text-2xl font-bold interactive no-cursor relative h-16"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <img 
-              src="/assets/images/mv initials icon_transparent.png" 
-              alt="MV Logo" 
-              className="h-full w-auto object-contain logo-image"
+        <div className="section-container flex items-center justify-between">
+          {/* Logo */}
+          <a href="#home" className="flex items-center h-10">
+            <img
+              src="/assets/images/mv initials icon_transparent.png"
+              alt="MV"
+              className="h-full w-auto object-contain"
+              style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
             />
-          </motion.a>
-          
-          <div className="hidden md:flex items-center space-x-8">
-            {['Home', 'Projects', 'Skills', 'About', 'Contact'].map((link, i) => (
-              <motion.a
+          </a>
+
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <a
                 key={link}
                 href={`#${link.toLowerCase()}`}
-                className={`text-primary hover:text-theme-accent transition-colors no-cursor interactive`}
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                whileHover={{ scale: 1.1 }}
+                className="nav-link font-body text-sm font-medium tracking-wide transition-colors duration-200"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
               >
                 {link}
-              </motion.a>
+              </a>
             ))}
-            
-            <motion.button
+
+            <button
               onClick={toggleTheme}
-              className="text-primary p-2 rounded-full hover:bg-nebula-purple/20 transition-colors no-cursor interactive"
-              whileHover={{ rotate: 15, scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              className="p-2 rounded-full transition-colors duration-200 hover:bg-[color:var(--accent-muted)]"
+              aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
-                <Sun size={20} className="text-bright-teal" />
+                <Sun size={18} style={{ color: 'var(--accent)' }} />
               ) : (
-                <Moon size={20} className="text-[#ff818f]" />
+                <Moon size={18} style={{ color: 'var(--accent)' }} />
               )}
-            </motion.button>
+            </button>
           </div>
-          
-          <motion.button
-            className="md:hidden text-primary p-2 no-cursor"
+
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden p-2"
             onClick={() => setMenuOpen(true)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            aria-label="Open menu"
           >
-            <Menu size={24} />
-          </motion.button>
+            <Menu size={22} style={{ color: 'var(--text-primary)' }} />
+          </button>
         </div>
-      </motion.nav>
-      
+      </nav>
+
+      {/* Mobile menu overlay */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className={`fixed inset-0 z-50 flex flex-col ${
-              theme === 'light' 
-                ? 'bg-[#D8DEE9] text-[#2E3440]' 
-                : 'bg-deep-space text-space-white'
-            }`}
-            initial={{ x: "100%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: "100%", opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="fixed inset-0 z-[60] flex flex-col"
+            style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            <div className="px-6 py-4 flex justify-between items-center">
-              <img 
-                src="/assets/images/mv initials icon_transparent.png" 
-                alt="MV Logo" 
-                className="h-16 w-auto object-contain logo-image"
-              />
-              <motion.button
-                onClick={() => setMenuOpen(false)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="text-primary"
-              >
-                <X size={24} />
-              </motion.button>
+            <div className="section-container py-5 flex items-center justify-between">
+              <a href="#home" className="h-10">
+                <img
+                  src="/assets/images/mv initials icon_transparent.png"
+                  alt="MV"
+                  className="h-full w-auto object-contain"
+                  style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
+                />
+              </a>
+              <button onClick={() => setMenuOpen(false)} aria-label="Close menu">
+                <X size={22} style={{ color: 'var(--text-primary)' }} />
+              </button>
             </div>
-            
-            <div className="flex flex-col items-center justify-center flex-1 space-y-8">
-              {['Home', 'Projects', 'Skills', 'About', 'Contact'].map((link, i) => (
+
+            <div className="flex-1 flex flex-col items-center justify-center gap-10">
+              {navLinks.map((link, i) => (
                 <motion.a
                   key={link}
                   href={`#${link.toLowerCase()}`}
-                  className={`text-2xl transition-colors ${
-                    theme === 'light'
-                      ? 'text-[#2E3440] hover:text-nebula-pink'
-                      : 'text-space-white hover:text-bright-teal'
-                  }`}
                   onClick={() => setMenuOpen(false)}
+                  className="font-display text-4xl italic"
+                  style={{ color: 'var(--text-primary)' }}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { delay: i * 0.1 } 
-                  }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08, duration: 0.4 }}
                 >
                   {link}
                 </motion.a>
               ))}
-              
+
               <motion.button
                 onClick={toggleTheme}
-                className={`p-4 rounded-full transition-colors mt-8 ${
-                  theme === 'light'
-                    ? 'hover:bg-nebula-purple/20 text-[#2E3440]'
-                    : 'hover:bg-nebula-purple/20 text-space-white'
-                }`}
-                whileHover={{ rotate: 15, scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ 
-                  opacity: 1, 
-                  scale: 1,
-                  transition: { delay: 0.4 } 
-                }}
+                className="mt-4 p-3 rounded-full hover:bg-[color:var(--accent-muted)] transition-colors"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                aria-label="Toggle theme"
               >
                 {theme === 'dark' ? (
-                  <Sun size={24} className="text-bright-teal" />
+                  <Sun size={22} style={{ color: 'var(--accent)' }} />
                 ) : (
-                  <Moon size={24} className="text-[#ff818f]" />
+                  <Moon size={22} style={{ color: 'var(--accent)' }} />
                 )}
               </motion.button>
             </div>
