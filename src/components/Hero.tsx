@@ -1,14 +1,7 @@
-import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
-
-
-
-// Lazy load 3D components
-// Using dynamic import with type annotation
-const SpacePlanetComponent = lazy(() => import('./SpacePlanet'));
-
 
 const Hero: React.FC = () => {
   const textRef = useRef<HTMLSpanElement>(null);

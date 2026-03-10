@@ -32,7 +32,6 @@ const TerminalEffect: React.FC<{ text: string }> = ({ text }) => {
   }, [theme]);
   
   const startAnimation = () => {
-    console.log('Starting terminal animation');
     const linesArray = text.split('\n');
     
     // Clear any existing content
@@ -116,10 +115,7 @@ const TypedText: React.FC<{ text: string; showCursor?: boolean; style?: React.CS
         value: text,
         delimiter: ''
       },
-      ease: 'none',
-      onComplete: () => {
-        console.log('Typing animation complete for:', text);
-      }
+      ease: 'none'
     });
   }, [text]);
   

@@ -1,5 +1,5 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Suspense, lazy } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { Constellation } from './components/Constellation';
 import Navbar from './components/Navbar';
@@ -17,37 +17,28 @@ const About = lazy(() => import('./components/About'));
 const Contact = lazy(() => import('./components/Contact'));
 
 function App() {
-  const [loading, setLoading] = useState(true);
-  const { theme } = useTheme();
-  
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const { theme, enable3D } = useTheme();
 
   return (
     <div className={`min-h-screen bg-background text-foreground antialiased ${theme}`}>
       <AnimatePresence>
-        {loading ? (
-          <LoadingSpinner fullScreen />
-        ) : (
-          <div className="relative">
-            {/* <CustomCursor /> */}
+        <div className="relative">
+          {/* <CustomCursor /> */}
+          {enable3D && (
             <div className="fixed inset-0 z-0 pointer-events-none">
               <Canvas
-                camera={{ 
+                camera={{
                   position: [0, 0, 25],
                   fov: 50,
                   near: 0.1,
                   far: 1000
                 }}
-                gl={{ 
+                gl={{
                   antialias: true,
                   alpha: true,
                   stencil: false,
                   depth: true,
-                  powerPreference: "high-performance"
+                  powerPreference: 'high-performance'
                 }}
                 dpr={Math.min(window.devicePixelRatio, 2)}
                 style={{ background: 'transparent' }}
@@ -56,28 +47,28 @@ function App() {
                 <Constellation />
               </Canvas>
             </div>
-            <ScrollProgress />
-            <Navbar />
-            <main>
-              <Suspense fallback={<LoadingSpinner />}>
-                <Hero />
-              </Suspense>
-              <Suspense fallback={<LoadingSpinner />}>
-                <Projects />
-              </Suspense>
-              <Suspense fallback={<LoadingSpinner />}>
-                <Skills />
-              </Suspense>
-              <Suspense fallback={<LoadingSpinner />}>
-                <About />
-              </Suspense>
-              <Suspense fallback={<LoadingSpinner />}>
-                <Contact />
-              </Suspense>
-            </main>
-            <Footer />
-          </div>
-        )}
+          )}
+          <ScrollProgress />
+          <Navbar />
+          <main>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Hero />
+            </Suspense>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Projects />
+            </Suspense>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Skills />
+            </Suspense>
+            <Suspense fallback={<LoadingSpinner />}>
+              <About />
+            </Suspense>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Contact />
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
       </AnimatePresence>
     </div>
   );

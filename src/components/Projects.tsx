@@ -72,7 +72,7 @@ const Projects: React.FC = () => {
   const [personalExpanded, setPersonalExpanded] = useState(true);
 
   return (
-    <section id="work" className="py-20 px-4 sm:px-6 lg:px-8 max-w-[90rem] mx-auto">
+    <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8 max-w-[90rem] mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -92,7 +92,6 @@ const Projects: React.FC = () => {
           <button 
             type="button"
             onClick={() => {
-              console.log('Client button clicked');
               setClientExpanded(!clientExpanded);
             }}
             className="w-full flex items-center justify-between bg-transparent text-left p-4 rounded-lg hover:bg-muted/50 transition-colors"
@@ -134,7 +133,6 @@ const Projects: React.FC = () => {
           <button 
             type="button"
             onClick={() => {
-              console.log('Personal button clicked');
               setPersonalExpanded(!personalExpanded);
             }}
             className="w-full flex items-center justify-between bg-transparent text-left p-4 rounded-lg hover:bg-muted/50 transition-colors"
