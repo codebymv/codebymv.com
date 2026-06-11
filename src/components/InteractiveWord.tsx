@@ -356,11 +356,12 @@ function createEraserEffect(): WordEffect {
 // ---------------------------------------------------------------------------
 
 /**
- * The hero's emphasized word. On hover (fine pointers only) a randomly chosen
- * effect breaks the word apart on a full-viewport canvas — bouncing marbles or
- * an eraser sweep, never the same effect twice in a row. Clicking anywhere
- * plays the effect's exit and restores the text. Everything is painted with
- * the element's live computed color, so it adapts to either theme.
+ * The hero's emphasized word. A randomly chosen effect breaks the word apart
+ * on a full-viewport canvas — bouncing marbles or an eraser sweep, never the
+ * same effect twice in a row. Fine pointers trigger it on hover; touch
+ * devices trigger it on tap. Clicking/tapping anywhere afterwards plays the
+ * effect's exit and restores the text. Everything is painted with the
+ * element's live computed color, so it adapts to either theme.
  */
 const InteractiveWord: React.FC = () => {
   const emRef = useRef<HTMLElement>(null);
@@ -371,7 +372,7 @@ const InteractiveWord: React.FC = () => {
 
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!finePointer || reducedMotion) return;
+    if (reducedMotion) return;
 
     const effects: WordEffect[] = [createMarbleEffect(), createEraserEffect()];
     let lastEffect = -1;
@@ -511,8 +512,14 @@ const InteractiveWord: React.FC = () => {
       sleeping = false;
     };
 
-    const onRelease = () => {
+    /** When the scatter started — release ignores the same tap gesture. */
+    let scatterTs = 0;
+
+    const onRelease = (ev: PointerEvent) => {
       if (mode !== 'scattered' || !effect) return;
+      // On hybrid/touch devices the tap that triggered the scatter also fires
+      // a pointerdown right after; don't let it instantly restore the word.
+      if (ev.timeStamp - scatterTs < 150) return;
       mode = 'returning';
       returnT0 = performance.now();
       returnTotal = effect.release(returnT0);
@@ -550,6 +557,7 @@ const InteractiveWord: React.FC = () => {
       em.style.opacity = '0';
       mode = 'scattered';
       sleeping = false;
+      scatterTs = performance.now();
       window.addEventListener('pointerdown', onRelease);
       lastT = performance.now();
       raf = requestAnimationFrame(frame);
@@ -561,11 +569,17 @@ const InteractiveWord: React.FC = () => {
       if (sleeping) wake();
     };
 
-    em.addEventListener('pointerenter', scatter);
+    // Fine pointers scatter on hover; everyone (touch included) can also
+    // scatter with a tap/click. `click` fires after the gesture's pointerdown,
+    // so a tap on the word can't release the effect it just started — and a
+    // tap anywhere else hits the window pointerdown listener to restore it.
+    if (finePointer) em.addEventListener('pointerenter', scatter);
+    em.addEventListener('click', scatter);
     window.addEventListener('resize', onResize);
 
     return () => {
       em.removeEventListener('pointerenter', scatter);
+      em.removeEventListener('click', scatter);
       window.removeEventListener('resize', onResize);
       teardown();
     };
