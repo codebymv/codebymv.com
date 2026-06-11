@@ -67,18 +67,25 @@ const Contact: React.FC = () => {
   return (
     <section id="contact" className="py-24 md:py-32 cv-auto">
       <div className="section-container">
-        <SectionHeader eyebrow="Contact" title={<>Let's <em className="font-serif italic font-normal">talk</em></>} />
+        <SectionHeader
+          eyebrow="Contact"
+          title={
+            <>
+              Let's <em className="font-serif italic font-normal">talk</em>
+            </>
+          }
+          endContent={
+            <a
+              href="mailto:codebymv@gmail.com"
+              className="link-draw font-medium tracking-[-0.02em] leading-none text-[clamp(1.25rem,3.5vw,3rem)] break-all md:text-right md:shrink-0 md:pb-1"
+              style={{ color: 'var(--accent)' }}
+            >
+              codebymv@gmail.com
+            </a>
+          }
+        />
 
         <div ref={ref} className={`reveal ${inView ? 'in-view' : ''}`}>
-          {/* The primary action: the email address, set huge */}
-          <a
-            href="mailto:codebymv@gmail.com"
-            className="link-draw inline-block font-medium tracking-[-0.02em] leading-none text-[clamp(1.5rem,4.5vw,4rem)] mb-16 md:mb-20 break-all"
-            style={{ color: 'var(--accent)' }}
-          >
-            codebymv@gmail.com
-          </a>
-
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
             {/* Info */}
             <div className="lg:col-span-5">
