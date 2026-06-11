@@ -12,8 +12,8 @@
   --bg-elevated: #FFFFFF;
   --bg-subtle: #F1F1EC;
   --text-primary: #161616;
-  --text-secondary: #55554F;
-  --text-muted: #8A8A83;
+  --text-secondary: #4A4A44;
+  --text-muted: #787872;
   --accent: #2B49FF;
   --accent-hover: #1F38D6;
   --accent-muted: rgba(43, 73, 255, 0.08);
@@ -26,8 +26,8 @@
   --bg-elevated: #18191B;
   --bg-subtle: #1E2022;
   --text-primary: #F2F2EF;
-  --text-secondary: #A4A4A0;
-  --text-muted: #6E6E69;
+  --text-secondary: #B0B0AA;
+  --text-muted: #858580;
   --accent: #5C74FF;
   --accent-hover: #7D90FF;
   --accent-muted: rgba(92, 116, 255, 0.12);
@@ -294,7 +294,7 @@ button:focus-visible {
 .section-container {
   max-width: 72rem;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding-inline: 1.5rem;
 }
 
 .text-balance {

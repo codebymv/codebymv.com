@@ -2,25 +2,70 @@ import React from 'react';
 import SectionHeader from './SectionHeader';
 import { useInView } from '../hooks/useInView';
 
+type CapabilityItem =
+  | string
+  | {
+      name: string;
+      tag?: string;
+    };
+
 interface Group {
   label: string;
-  items: string[];
+  items: CapabilityItem[];
 }
 
 const groups: Group[] = [
   {
     label: 'Frontend',
-    items: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js'],
+    items: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'Next.js (React)', 'Three.js'],
   },
   {
     label: 'Backend',
-    items: ['Node.js', 'NestJS', 'MongoDB', 'PostgreSQL', 'MSSQL'],
+    items: ['Node.js', 'Express', 'NestJS', 'MongoDB', 'PostgreSQL', 'MSSQL'],
   },
   {
     label: 'Tools',
-    items: ['OOP', 'SCRUM', 'Git', 'Docker', 'Electron'],
+    items: ['OOP', 'SCRUM', 'Git', 'Docker', 'Electron', 'Forgejo'],
+  },
+  {
+    label: 'Models & Harnesses',
+    items: [
+      { name: "Anthropic's Claude Code (Haiku, Sonnet, Opus, Fable)", tag: 'CLI' },
+      { name: "OpenAI's Codex (GPT 5–5.5)", tag: 'CLI' },
+      { name: 'VS Code (Copilot, misc)', tag: 'IDE' },
+      { name: 'Cursor (Composer 2.5, misc)', tag: 'IDE' },
+      { name: 'Windsurf (SWE 1.6, misc)', tag: 'IDE' },
+      { name: 'Kiro (Antigravity)', tag: 'IDE' },
+    ],
   },
 ];
+
+const ItemList: React.FC<{ items: CapabilityItem[] }> = ({ items }) => (
+  <ul className="space-y-2.5">
+    {items.map((item) => {
+      const key = typeof item === 'string' ? item : item.name;
+      return (
+        <li key={key} className="text-lg leading-snug" style={{ color: 'var(--text-secondary)' }}>
+          {typeof item === 'string' ? (
+            item
+          ) : (
+            <>
+              {item.name}
+              {item.tag && (
+                <span
+                  className="font-mono text-[0.6875rem] tracking-[0.12em] uppercase ml-2"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  · {item.tag}
+                </span>
+              )}
+            </>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+);
 
 const Capabilities: React.FC = () => {
   const { ref, inView } = useInView<HTMLDivElement>();
@@ -32,7 +77,7 @@ const Capabilities: React.FC = () => {
 
         <div
           ref={ref}
-          className={`reveal grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-12 ${inView ? 'in-view' : ''}`}
+          className={`reveal grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12 ${inView ? 'in-view' : ''}`}
         >
           {groups.map((group, i) => (
             <div
@@ -41,13 +86,7 @@ const Capabilities: React.FC = () => {
               style={{ borderColor: 'var(--border-strong)', transitionDelay: `${i * 100}ms` }}
             >
               <p className="eyebrow mb-5">{group.label}</p>
-              <ul className="space-y-2.5">
-                {group.items.map((item) => (
-                  <li key={item} className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <ItemList items={group.items} />
             </div>
           ))}
         </div>
