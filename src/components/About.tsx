@@ -35,16 +35,14 @@ const About: React.FC = () => {
           {/* Bio */}
           <div className="lg:col-span-7 max-w-xl">
             <p className="text-xl md:text-2xl leading-snug tracking-[-0.01em] mb-8">
-              I build at the intersection of engineering precision and{' '}
-              <em className="font-serif italic font-normal">creative expression</em>.
+              I genuinely enjoy going deep on new technologies to build cool things that I enjoy and people use!
             </p>
 
             <div className="space-y-5 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               <p>
-                Based in Tucson, AZ — I'm a full-stack developer who finds equal joy in
-                architecting robust backends and polishing pixel-perfect interfaces.
-                I've worked with businesses to enhance their web presence and find the
-                right solutions for their stack.
+                Based in Tucson, AZ — I'm a full-stack developer who can competently solve problems across the stack of various systems.
+                I've worked with businesses to enhance their web presence, automate workflows with AI, and find the right
+                solutions for their challenges.
               </p>
               <p>
                 Beyond code, I produce music and build audio tools.{' '}
@@ -67,14 +65,14 @@ const About: React.FC = () => {
                 >
                   MixFade
                 </a>{' '}
-                is a comparative audio analysis tool I designed and built from scratch.
+                is a comparative audio analysis tool I designed and built from scratch. VST coming soon!
               </p>
             </div>
 
             <hr className="rule my-8" />
 
             <p className="font-mono text-[0.6875rem] tracking-[0.15em] uppercase" style={{ color: 'var(--text-muted)' }}>
-              Problem solving · Clean code · Continuous learning · Audio engineering
+              Problem solving · Clean code · Continuous learning · Engineering
             </p>
           </div>
         </div>
