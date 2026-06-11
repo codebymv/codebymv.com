@@ -40,7 +40,7 @@ const About: React.FC = () => {
 
             <div className="space-y-5 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               <p>
-                Based in Tucson, AZ — I'm a full-stack developer who can competently solve problems across the stack of various systems.
+                Based in Tucson, AZ, I'm a full-stack developer who can competently solve problems across the stack of various systems.
                 I've worked with businesses to enhance their web presence, automate workflows with AI, and find the right
                 solutions for their challenges.
               </p>
