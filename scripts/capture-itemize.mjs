@@ -300,7 +300,9 @@ const MOCK_VAULTS = [
     is_locked: true,
     item_count: 3,
     items: [
-      { id: 1, vault_id: 601, item_type: 'key_value', label: 'Gemini API Key', value: 'AIzaSyD4mO5tLqXw82hRkPnE6vTj9cYuB1aZsQg', order_index: 0, created_at: NOW, updated_at: NOW },
+      // Deliberately NOT in the real AIza... format so secret scanners
+      // (GitHub push protection, Netlify) don't flag this dummy value.
+      { id: 1, vault_id: 601, item_type: 'key_value', label: 'Gemini API Key', value: 'gm-demo-4mO5tLqXw82hRkPnE6vTj9cYuB1aZsQg', order_index: 0, created_at: NOW, updated_at: NOW },
       { id: 2, vault_id: 601, item_type: 'key_value', label: 'Postgres URL', value: 'postgres://prod:****@db.internal:5432', order_index: 1, created_at: NOW, updated_at: NOW },
       { id: 3, vault_id: 601, item_type: 'key_value', label: 'Railway Token', value: 'rwy_4f9c2a7e1b8d4c3f9a6e5d2b7c1f8a3e', order_index: 2, created_at: NOW, updated_at: NOW },
     ],
