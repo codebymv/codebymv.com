@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp } from './icons';
 
 const Footer: React.FC = () => {
   const scrollToTop = () => {
@@ -7,50 +7,18 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="border-t border-[color:var(--border)]" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      <div className="section-container py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-6">
-          <a href="#home" className="h-8">
-            <img
-              src="/assets/images/mv initials icon_transparent.png"
-              alt="MV"
-              className="h-full w-auto object-contain"
-            />
-          </a>
-          <span className="font-body text-sm" style={{ color: 'var(--text-muted)' }}>
-            &copy; {new Date().getFullYear()} Matt Valentine
-          </span>
-        </div>
-
-        <div className="flex items-center gap-6">
-          <a
-            href="https://github.com/codebymv"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-body text-sm transition-colors duration-200"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            GitHub
-          </a>
-          <a
-            href="https://twitter.com/codebymv"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-body text-sm transition-colors duration-200"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            Twitter
-          </a>
+    <footer style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="section-container">
+        <hr className="rule" />
+        <div className="py-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[0.6875rem] tracking-[0.15em] uppercase" style={{ color: 'var(--text-muted)' }}>
+          <span>&copy; {new Date().getFullYear()} Matt Valentine</span>
+          <span>Built by hand in Tucson, AZ</span>
           <button
             onClick={scrollToTop}
-            className="p-2 rounded-full transition-colors duration-200 hover:bg-[color:var(--accent-muted)]"
+            className="flex items-center gap-2 transition-colors duration-200 hover:text-[color:var(--accent)] uppercase tracking-[0.15em]"
             aria-label="Back to top"
           >
-            <ArrowUp size={16} style={{ color: 'var(--accent)' }} />
+            Back to top <ArrowUp size={12} />
           </button>
         </div>
       </div>

@@ -2,12 +2,10 @@ import { Suspense, lazy } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import GrainOverlay from './components/GrainOverlay';
-import WaveformDivider from './components/WaveformDivider';
 
 const Hero = lazy(() => import('./components/Hero'));
-const Projects = lazy(() => import('./components/Projects'));
-const Skills = lazy(() => import('./components/Skills'));
+const Work = lazy(() => import('./components/Work'));
+const Capabilities = lazy(() => import('./components/Capabilities'));
 const About = lazy(() => import('./components/About'));
 const Contact = lazy(() => import('./components/Contact'));
 
@@ -20,32 +18,23 @@ const Fallback = () => (
 function App() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-      <GrainOverlay />
       <Navbar />
       <main>
         <Suspense fallback={<Fallback />}>
           <Hero />
         </Suspense>
 
-        <WaveformDivider />
-
         <Suspense fallback={<Fallback />}>
-          <Projects />
+          <Work />
         </Suspense>
 
-        <WaveformDivider />
-
         <Suspense fallback={<Fallback />}>
-          <Skills />
+          <Capabilities />
         </Suspense>
-
-        <WaveformDivider />
 
         <Suspense fallback={<Fallback />}>
           <About />
         </Suspense>
-
-        <WaveformDivider />
 
         <Suspense fallback={<Fallback />}>
           <Contact />

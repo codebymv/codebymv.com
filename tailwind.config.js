@@ -22,9 +22,9 @@ export default {
         muted: 'var(--text-muted)',
       },
       fontFamily: {
-        display: ['"Instrument Serif"', 'serif'],
-        body: ['Outfit', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
+        body: ['"Instrument Sans"', 'sans-serif'],
+        serif: ['"Instrument Serif"', 'serif'],
+        mono: ['"Geist Mono"', 'monospace'],
       },
     },
   },

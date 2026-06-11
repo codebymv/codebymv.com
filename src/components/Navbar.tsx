@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, Moon, Sun, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { Sun, Moon, Menu, X } from './icons';
+import LocalTime from './LocalTime';
 
-const navLinks = ['Projects', 'Skills', 'About', 'Contact'];
+const navLinks = ['Work', 'About', 'Contact'];
 
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -16,51 +16,55 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
   return (
     <header>
       <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b ${
           scrolled
-            ? 'py-3 bg-[color:var(--bg-primary)]/90 backdrop-blur-md border-b border-[color:var(--border)]'
-            : 'py-5 bg-transparent'
+            ? 'py-3 bg-[color:var(--bg-primary)]/85 backdrop-blur-md border-[color:var(--border)]'
+            : 'py-5 bg-transparent border-transparent'
         }`}
       >
         <div className="section-container flex items-center justify-between">
           {/* Logo */}
-          <a href="#home" className="flex items-center h-10">
+          <a href="#home" className="flex items-center h-8">
             <img
-              src="/assets/images/mv initials icon_transparent.png"
-              alt="MV"
+              src="/assets/images/mv full logo_transparent.png"
+              alt="codebymv"
               className="h-full w-auto object-contain"
               style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
             />
           </a>
 
-          {/* Desktop links */}
+          {/* Desktop */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
                 key={link}
                 href={`#${link.toLowerCase()}`}
-                className="nav-link font-body text-sm font-medium tracking-wide transition-colors duration-200"
+                className="link-draw font-body text-sm transition-colors duration-200 hover:text-[color:var(--text-primary)]"
                 style={{ color: 'var(--text-secondary)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
               >
                 {link}
               </a>
             ))}
 
+            <LocalTime className="hidden lg:inline" />
+
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full transition-colors duration-200 hover:bg-[color:var(--accent-muted)]"
+              className="p-2 transition-colors duration-200 hover:text-[color:var(--accent)]"
+              style={{ color: 'var(--text-secondary)' }}
               aria-label="Toggle theme"
             >
-              {theme === 'dark' ? (
-                <Sun size={18} style={{ color: 'var(--accent)' }} />
-              ) : (
-                <Moon size={18} style={{ color: 'var(--accent)' }} />
-              )}
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
           </div>
 
@@ -69,71 +73,67 @@ const Navbar: React.FC = () => {
             className="md:hidden p-2"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
+            style={{ color: 'var(--text-primary)' }}
           >
-            <Menu size={22} style={{ color: 'var(--text-primary)' }} />
+            <Menu size={20} />
           </button>
         </div>
       </nav>
 
-      {/* Mobile menu overlay */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            className="fixed inset-0 z-[60] flex flex-col"
-            style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="section-container py-5 flex items-center justify-between">
-              <a href="#home" className="h-10">
-                <img
-                  src="/assets/images/mv initials icon_transparent.png"
-                  alt="MV"
-                  className="h-full w-auto object-contain"
-                  style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
-                />
-              </a>
-              <button onClick={() => setMenuOpen(false)} aria-label="Close menu">
-                <X size={22} style={{ color: 'var(--text-primary)' }} />
-              </button>
-            </div>
+      {/* Mobile overlay */}
+      <div
+        className={`fixed inset-0 z-[60] flex flex-col transition-opacity duration-300 md:hidden ${
+          menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+        aria-hidden={!menuOpen}
+      >
+        <div className={`section-container flex items-center justify-between ${scrolled ? 'py-3' : 'py-5'}`}>
+          <a href="#home" onClick={() => setMenuOpen(false)} className="flex items-center h-8">
+            <img
+              src="/assets/images/mv full logo_transparent.png"
+              alt="codebymv"
+              className="h-full w-auto object-contain"
+              style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
+            />
+          </a>
+          <button onClick={() => setMenuOpen(false)} aria-label="Close menu" className="p-2">
+            <X size={20} />
+          </button>
+        </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center gap-10">
-              {navLinks.map((link, i) => (
-                <motion.a
-                  key={link}
-                  href={`#${link.toLowerCase()}`}
-                  onClick={() => setMenuOpen(false)}
-                  className="font-display text-4xl italic"
-                  style={{ color: 'var(--text-primary)' }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08, duration: 0.4 }}
-                >
-                  {link}
-                </motion.a>
-              ))}
+        <div className="flex-1 flex flex-col justify-center section-container w-full">
+          <hr className="rule mb-8" />
+          {navLinks.map((link, i) => (
+            <a
+              key={link}
+              href={`#${link.toLowerCase()}`}
+              onClick={() => setMenuOpen(false)}
+              className={`flex items-baseline gap-4 py-4 border-b border-[color:var(--border)] transition-all duration-500 ${
+                menuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+              }`}
+              style={{ transitionDelay: menuOpen ? `${i * 70 + 100}ms` : '0ms' }}
+            >
+              <span className="font-mono text-[0.6875rem]" style={{ color: 'var(--text-muted)' }}>
+                0{i + 1}
+              </span>
+              <span className="text-3xl font-medium tracking-[-0.02em]">{link}</span>
+            </a>
+          ))}
 
-              <motion.button
-                onClick={toggleTheme}
-                className="mt-4 p-3 rounded-full hover:bg-[color:var(--accent-muted)] transition-colors"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                aria-label="Toggle theme"
-              >
-                {theme === 'dark' ? (
-                  <Sun size={22} style={{ color: 'var(--accent)' }} />
-                ) : (
-                  <Moon size={22} style={{ color: 'var(--accent)' }} />
-                )}
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <div className="flex items-center justify-between mt-10">
+            <LocalTime />
+            <button
+              onClick={toggleTheme}
+              className="p-2"
+              style={{ color: 'var(--text-secondary)' }}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
   );
 };
