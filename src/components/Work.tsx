@@ -144,7 +144,7 @@ const WorkEntry: React.FC<{ project: Project; index: number }> = ({ project, ind
 
 const Work: React.FC = () => {
   return (
-    <section id="work" className="py-24 md:py-32">
+    <section id="work" className="py-16 md:py-24">
       <div className="section-container">
         <SectionHeader eyebrow="Projects" title="Selected Work" />
 
