@@ -144,9 +144,13 @@ const WorkEntry: React.FC<{ project: Project; index: number }> = ({ project, ind
 
 const Work: React.FC = () => {
   return (
-    <section id="work" className="py-16 md:py-24">
+    <section id="work" className="py-10 md:py-24">
       <div className="section-container">
-        <SectionHeader eyebrow="Projects" title="Selected Work" />
+        <SectionHeader
+          eyebrow="Projects"
+          title="Selected Work"
+          titleClassName="mt-3 md:mt-0"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16 md:gap-y-20">
           {projects.map((project, i) => (
