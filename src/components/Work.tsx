@@ -12,27 +12,37 @@ interface Project {
   tags: string[];
   link: string;
   year: string;
-  kind: 'Client' | 'Personal';
+  // kind: 'Client' | 'Personal';
 }
 
+// Display order: newest year first, then alphabetical by title
 const projects: Project[] = [
   {
     title: 'SampleSeeker.com',
-    description: 'A sophisticated sample-seeking workspace for music producers to discover obscure audio samples via YouTube with deep genre, era, and obscurity filters.',
+    description: 'A sophisticated sample shuffling workspace that functions like a slot machine for music producers to discover obscure audio samples via YouTube with deep genre, era, and obscurity filters.',
     media: 'sampleseeker',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'PostgreSQL'],
     link: 'https://sampleseeker.com',
     year: '2026',
-    kind: 'Personal',
+    // kind: 'Personal',
+  },
+  {
+    title: 'GleamAI.dev',
+    description: 'An AI voice agent platform for businesses. Configure conversational agents that handle calls and SMS over Twilio, with live analytics, campaign management, and usage-based billing.',
+    media: 'gleamai',
+    tags: ['Next.js (React)', 'TypeScript', 'Tailwind CSS', 'Recharts'],
+    link: 'https://gleamai.dev',
+    year: '2026',
+    // kind: 'Personal',
   },
   {
     title: 'FlashCore.dev',
-    description: 'A high-fidelity web gaming hub and instant-play arcade platform designed to revitalize browser-based games with integrated leaderboards, player achievements, and optimized WASM game packaging.',
+    description: 'A high fidelity web gaming hub and instant-play arcade platform designed to revitalize browser-based games with integrated leaderboards, player achievements, and optimized WASM game packaging.',
     media: 'flashcore',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Supabase', 'Vite'],
     link: 'https://flashcore.dev',
     year: '2026',
-    kind: 'Personal',
+    // kind: 'Personal',
   },
   {
     title: 'Itemize.cloud',
@@ -40,8 +50,8 @@ const projects: Project[] = [
     media: 'itemize',
     tags: ['React', 'TypeScript', 'Gemini API'],
     link: 'https://itemize.cloud',
-    year: '2025',
-    kind: 'Client',
+    year: '2026',
+    // kind: 'Client',
   },
   {
     title: 'MixFade.com & MixFade Desktop',
@@ -50,7 +60,7 @@ const projects: Project[] = [
     tags: ['Electron', 'AWS S3', 'NSIS'],
     link: 'https://mixfade.com',
     year: '2025',
-    kind: 'Client',
+    // kind: 'Client',
   },
   {
     title: 'OpaqueSound.com',
@@ -59,7 +69,7 @@ const projects: Project[] = [
     tags: ['Shopify', 'Liquid', 'Stripe'],
     link: 'https://opaquesound.com',
     year: '2023',
-    kind: 'Client',
+    // kind: 'Client',
   },
   {
     title: 'WiPlayer',
@@ -68,7 +78,7 @@ const projects: Project[] = [
     tags: ['React', 'Web Audio API', 'Three.js'],
     link: 'https://wpfs.netlify.app',
     year: '2024',
-    kind: 'Personal',
+    // kind: 'Personal',
   },
   {
     title: 'Encoder',
@@ -77,7 +87,7 @@ const projects: Project[] = [
     tags: ['JavaScript', 'Video Processing', 'Canvas'],
     link: 'https://encodermv.netlify.app',
     year: '2024',
-    kind: 'Personal',
+    // kind: 'Personal',
   },
   {
     title: 'Forecaster',
@@ -86,11 +96,11 @@ const projects: Project[] = [
     tags: ['JavaScript', 'API Handling', 'Weather Data'],
     link: 'https://forecastermv.netlify.app',
     year: '2024',
-    kind: 'Personal',
+    // kind: 'Personal',
   },
-];
+].sort((a, b) => b.year.localeCompare(a.year) || a.title.localeCompare(b.title));
 
-const WorkEntry: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
+const WorkEntry: React.FC<{ project: Project; index: number; featured?: boolean }> = ({ project, index, featured = false }) => {
   const { ref, inView } = useInView<HTMLAnchorElement>();
 
   return (
@@ -99,7 +109,7 @@ const WorkEntry: React.FC<{ project: Project; index: number }> = ({ project, ind
       href={project.link}
       target="_blank"
       rel="noopener noreferrer"
-      className={`group block reveal ${inView ? 'in-view' : ''}`}
+      className={`group block reveal ${inView ? 'in-view' : ''} ${featured ? 'md:col-span-2' : ''}`}
       style={{ transitionDelay: `${(index % 2) * 100}ms` }}
     >
       {/* Index number */}
@@ -107,37 +117,44 @@ const WorkEntry: React.FC<{ project: Project; index: number }> = ({ project, ind
         {String(index + 1).padStart(2, '0')}
       </span>
 
-      {/* Media */}
-      <div className="aspect-[16/10] overflow-hidden" style={{ backgroundColor: 'var(--bg-subtle)' }}>
-        <ProjectMedia
-          src={`/assets/images/${project.media}.mp4`}
-          poster={`/assets/images/${project.media}-poster.jpg`}
-          label={`${project.title} preview`}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-        />
+      {/* Featured entries lay media + meta side by side on desktop */}
+      <div className={featured ? 'md:flex md:items-center md:gap-8' : ''}>
+        {/* Media */}
+        <div className={featured ? 'md:w-[calc(50%-1rem)] md:shrink-0' : ''}>
+          <div className="aspect-[16/10] overflow-hidden" style={{ backgroundColor: 'var(--bg-subtle)' }}>
+            <ProjectMedia
+              src={`/assets/images/${project.media}.mp4`}
+              poster={`/assets/images/${project.media}-poster.jpg`}
+              label={`${project.title} preview`}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+            />
+          </div>
+        </div>
+
+        {/* Meta */}
+        <div className={featured ? 'md:flex-1' : ''}>
+          <div className={`flex items-baseline justify-between gap-4 mt-5 ${featured ? 'md:mt-0' : ''}`}>
+            <h3 className="flex items-center gap-2 text-xl md:text-2xl font-medium tracking-[-0.01em] transition-colors duration-200 group-hover:text-[color:var(--accent)]">
+              {project.title}
+              <ArrowUpRight
+                size={18}
+                className="opacity-0 -translate-x-1 translate-y-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300"
+              />
+            </h3>
+            <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
+              {project.year}
+            </span>
+          </div>
+
+          <p className="font-mono text-[0.6875rem] tracking-[0.15em] uppercase mt-2" style={{ color: 'var(--text-muted)' }}>
+            {[project.kind, ...project.tags].join(' · ')}
+          </p>
+
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            {project.description}
+          </p>
+        </div>
       </div>
-
-      {/* Meta */}
-      <div className="flex items-baseline justify-between gap-4 mt-5">
-        <h3 className="flex items-center gap-2 text-xl md:text-2xl font-medium tracking-[-0.01em] transition-colors duration-200 group-hover:text-[color:var(--accent)]">
-          {project.title}
-          <ArrowUpRight
-            size={18}
-            className="opacity-0 -translate-x-1 translate-y-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300"
-          />
-        </h3>
-        <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
-          {project.year}
-        </span>
-      </div>
-
-      <p className="font-mono text-[0.6875rem] tracking-[0.15em] uppercase mt-2" style={{ color: 'var(--text-muted)' }}>
-        {[project.kind, ...project.tags].join(' · ')}
-      </p>
-
-      <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-        {project.description}
-      </p>
     </a>
   );
 };
@@ -154,7 +171,15 @@ const Work: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16 md:gap-y-20">
           {projects.map((project, i) => (
-            <WorkEntry key={project.title} project={project} index={i} />
+            <WorkEntry
+              key={project.title}
+              project={project}
+              index={i}
+              // With an odd project count, feature the first entry in a full
+              // top row (media left, meta right) instead of leaving the last
+              // entry stranded bottom-left.
+              featured={projects.length % 2 === 1 && i === 0}
+            />
           ))}
         </div>
       </div>

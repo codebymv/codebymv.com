@@ -10,6 +10,8 @@
     "convert:gifs": "node scripts/convert-gifs.mjs",
     "capture:sampleseeker": "node scripts/capture-sampleseeker.mjs",
     "capture:flashcore": "node scripts/capture-flashcore.mjs",
+    "capture:gleamai": "node scripts/capture-gleamai.mjs",
+    "capture:itemize": "node scripts/capture-itemize.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
