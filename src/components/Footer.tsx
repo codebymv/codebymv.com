@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
         <hr className="rule" />
         <div className="py-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[0.6875rem] tracking-[0.15em] uppercase" style={{ color: 'var(--text-muted)' }}>
           <span>&copy; {new Date().getFullYear()} Matt Valentine</span>
-          <span>Built by hand in Tucson, AZ</span>
+          <span>Tucson, AZ</span>
           <button
             onClick={scrollToTop}
             className="flex items-center gap-2 transition-colors duration-200 hover:text-[color:var(--accent)] uppercase tracking-[0.15em]"
