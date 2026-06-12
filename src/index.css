@@ -7,6 +7,9 @@
    ======================================== */
 
 :root {
+  /* Native form controls / scrollbars follow the active theme */
+  color-scheme: light;
+
   /* Light theme (default) — warm paper */
   --bg-primary: #FAFAF7;
   --bg-elevated: #FFFFFF;
@@ -22,6 +25,8 @@
 }
 
 .dark-theme {
+  color-scheme: dark;
+
   --bg-primary: #111213;
   --bg-elevated: #18191B;
   --bg-subtle: #1E2022;
@@ -287,7 +292,8 @@ button:focus-visible {
 .section-container {
   max-width: 72rem;
   margin: 0 auto;
-  padding-inline: 1.5rem;
+  /* Respect notch/safe areas on phones with viewport-fit=cover */
+  padding-inline: max(1.5rem, env(safe-area-inset-left)) max(1.5rem, env(safe-area-inset-right));
 }
 
 .text-balance {

@@ -14,7 +14,7 @@ const projects = ['itemize', 'mixfade', 'opaquesound', 'wiplayer', 'encoder', 'f
 for (const name of projects) {
   const input = `${IMAGES_DIR}/${name}.gif`;
   const mp4 = `${IMAGES_DIR}/${name}.mp4`;
-  const poster = `${IMAGES_DIR}/${name}-poster.jpg`;
+  const poster = `${IMAGES_DIR}/${name}-poster.webp`;
 
   execFileSync(
     ffmpeg,
@@ -35,7 +35,7 @@ for (const name of projects) {
 
   execFileSync(
     ffmpeg,
-    ['-y', '-i', input, '-frames:v', '1', '-q:v', '4', poster],
+    ['-y', '-i', input, '-frames:v', '1', '-c:v', 'libwebp', '-quality', '82', poster],
     { stdio: ['ignore', 'ignore', 'inherit'] }
   );
 

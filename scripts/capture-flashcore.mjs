@@ -7,7 +7,7 @@ import ffmpeg from 'ffmpeg-static';
 const URL = 'http://127.0.0.1:8080/';
 const CAPTURE_DIR = path.resolve('public/assets/images/capture_temp_flashcore');
 const OUTPUT_MP4 = path.resolve('public/assets/images/flashcore.mp4');
-const OUTPUT_POSTER = path.resolve('public/assets/images/flashcore-poster.jpg');
+const OUTPUT_POSTER = path.resolve('public/assets/images/flashcore-poster.webp');
 
 async function main() {
   console.log('Starting Puppeteer for interactive flashcore.dev capture...');
@@ -245,7 +245,8 @@ async function main() {
         '-y',
         '-i', path.join(CAPTURE_DIR, 'frame-000.png'),
         '-frames:v', '1',
-        '-q:v', '4',
+        '-c:v', 'libwebp',
+        '-quality', '82',
         OUTPUT_POSTER,
       ],
       { stdio: 'inherit' }

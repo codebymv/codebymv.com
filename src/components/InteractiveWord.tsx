@@ -4,6 +4,8 @@ const WORD = 'interactive';
 
 /** Hard cap on particle count — sampling step adapts to stay under this. */
 const MAX_PARTICLES = 320;
+/** Lower budget for touch devices, where GPUs/CPUs tend to be weaker. */
+const MAX_PARTICLES_COARSE = 200;
 /** Max physics timestep (s) — clamps tab-switch jumps. */
 const MAX_DT = 0.032;
 
@@ -352,13 +354,413 @@ function createEraserEffect(): WordEffect {
 }
 
 // ---------------------------------------------------------------------------
+// Effect 3: Bubbles — the word fizzes into bubbles that wobble upward and settle
+// against the top of the viewport; click pulls them back down into the word
+// ---------------------------------------------------------------------------
+
+const B_BUOYANCY = -420;
+/** Staggered lift-off window — the word fizzes apart rather than detaching all at once. */
+const B_LIFT_STAGGER_MS = 720;
+/** Per-bubble ease-in before full buoyancy kicks in. */
+const B_LIFT_RAMP_MS = 320;
+/** Soft-brake zone (px) as bubbles approach the ceiling. */
+const B_CEILING_EASE = 56;
+const B_RETURN_MS = 460;
+const B_RETURN_STAGGER_MS = 240;
+/** Top bubbles wait slightly longer on restore — a gentle cascade downward. */
+const B_RETURN_Y_STAGGER_MS = 280;
+
+interface Bubble {
+  hx: number; hy: number;
+  x: number; y: number;
+  vy: number;
+  r: number;
+  /** Horizontal wobble — position offset from anchorX, not integrated velocity. */
+  phase: number; freq: number;
+  amp: number; maxAmp: number;
+  /** Per-bubble rise terminal velocity (px/s, negative = up). */
+  terminal: number;
+  delay: number;
+  /** Timestamp when this bubble detached; 0 while still glued to the word. */
+  liftAt: number;
+  /** X at lift-off — wobble oscillates around this anchor. */
+  anchorX: number;
+  ceiling: boolean;
+  sx: number; sy: number;
+  dur: number;
+  /** Restore stagger derived from how high the bubble ended up. */
+  returnDelay: number;
+}
+
+/** Smoothstep 0→1. */
+const smooth = (t: number) => t * t * (3 - 2 * t);
+
+function createBubbleEffect(): WordEffect {
+  let bubbles: Bubble[] = [];
+  let phase: 'out' | 'back' = 'out';
+  let liftT0 = 0;
+  let returnT0 = 0;
+  let viewH = 800;
+
+  const drawBubble = (c: CanvasRenderingContext2D, b: Bubble, color: string) => {
+    const base = c.globalAlpha;
+
+    // Faint fill so the bubble reads as a volume, not just a ring
+    c.globalAlpha = base * 0.14;
+    c.fillStyle = color;
+    c.beginPath();
+    c.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    c.fill();
+
+    // Rim
+    c.globalAlpha = base * 0.9;
+    c.strokeStyle = color;
+    c.lineWidth = Math.max(1, b.r * 0.16);
+    c.beginPath();
+    c.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    c.stroke();
+
+    // Specular glint — a short inner arc in the upper left. Same color as the
+    // rim so it works in both themes.
+    c.globalAlpha = base * 0.55;
+    c.lineWidth = Math.max(1, b.r * 0.12);
+    c.beginPath();
+    c.arc(b.x, b.y, b.r * 0.62, Math.PI * 1.05, Math.PI * 1.45);
+    c.stroke();
+
+    c.globalAlpha = base;
+  };
+
+  const applyWobble = (b: Bubble, t: number) => {
+    b.x = b.anchorX + Math.sin((t / 1000) * b.freq + b.phase) * b.amp;
+  };
+
+  return {
+    init(sample, rect, t) {
+      phase = 'out';
+      liftT0 = t;
+      viewH = window.innerHeight;
+      bubbles = sample.pts.map(({ hx, hy }) => ({
+        hx, hy,
+        x: rect.left + hx,
+        y: rect.top + hy,
+        vy: 0,
+        r: sample.step * (0.5 + Math.random() * 0.3),
+        phase: Math.random() * Math.PI * 2,
+        freq: 1.4 + Math.random() * 1.6,
+        amp: 0,
+        maxAmp: 14 + Math.random() * 22,
+        terminal: -(140 + Math.random() * 120),
+        delay: Math.random() * B_LIFT_STAGGER_MS,
+        liftAt: 0,
+        anchorX: rect.left + hx,
+        ceiling: false,
+        sx: 0, sy: 0,
+        dur: B_RETURN_MS + Math.random() * B_RETURN_STAGGER_MS,
+        returnDelay: 0,
+      }));
+    },
+
+    release(t) {
+      phase = 'back';
+      returnT0 = t;
+      let total = 0;
+      for (const b of bubbles) {
+        b.sx = b.x;
+        b.sy = b.y;
+        // Higher bubbles return in a gentle top→bottom wave
+        b.returnDelay = (1 - Math.min(b.sy, viewH) / viewH) * B_RETURN_Y_STAGGER_MS;
+        const end = b.returnDelay + b.dur;
+        if (end > total) total = end;
+      }
+      return total;
+    },
+
+    step(ctx, dt, t, view) {
+      viewH = view.vh;
+
+      if (phase === 'out') {
+        let allResting = true;
+        for (const b of bubbles) {
+          if (b.liftAt === 0) {
+            if (t - liftT0 >= b.delay) {
+              b.liftAt = t;
+              b.anchorX = view.rect.left + b.hx;
+              b.x = b.anchorX;
+              b.y = view.rect.top + b.hy;
+              // Tiny initial kick so lift-off isn't a dead start
+              b.vy = -30 - Math.random() * 40;
+            } else {
+              // Still attached — track the live word position until lift-off
+              b.anchorX = view.rect.left + b.hx;
+              b.x = b.anchorX;
+              b.y = view.rect.top + b.hy;
+              allResting = false;
+              drawBubble(ctx, b, view.color);
+              continue;
+            }
+          }
+
+          if (!b.ceiling) {
+            const sinceLift = t - b.liftAt;
+            const ramp = smooth(Math.min(1, sinceLift / B_LIFT_RAMP_MS));
+
+            // Ease buoyancy and wobble amplitude in together
+            b.vy += B_BUOYANCY * dt * ramp;
+            b.vy += (b.terminal - b.vy) * (1 - Math.exp(-2.8 * dt));
+            b.amp = b.maxAmp * ramp;
+
+            // Soft brake as the bubble nears the ceiling
+            const distTop = b.y - b.r;
+            if (distTop < B_CEILING_EASE) {
+              const proximity = Math.max(0, distTop / B_CEILING_EASE);
+              b.vy *= 0.55 + 0.45 * proximity;
+            }
+
+            b.y += b.vy * dt;
+            applyWobble(b, t);
+
+            if (b.y - b.r <= 0.5) {
+              b.y = b.r;
+              b.vy = 0;
+              b.ceiling = true;
+            }
+          } else {
+            // At ceiling — wobble amplitude decays smoothly (frame-rate independent)
+            b.amp = Math.max(0, b.amp * Math.exp(-5 * dt));
+            applyWobble(b, t);
+          }
+
+          // Soft side walls — nudge anchor so wobble doesn't clip harshly
+          if (b.x - b.r < 0) {
+            b.anchorX += b.r - b.x;
+            b.x = b.r;
+          } else if (b.x + b.r > view.vw) {
+            b.anchorX -= b.x + b.r - view.vw;
+            b.x = view.vw - b.r;
+          }
+
+          if (!b.ceiling || b.amp > 0.8) allResting = false;
+          drawBubble(ctx, b, view.color);
+        }
+        return allResting ? 'resting' : 'active';
+      }
+
+      // Fixed-duration ease-out tween back into the word, staggered by height
+      let settled = true;
+      for (const b of bubbles) {
+        const p = Math.min(1, Math.max(0, (t - returnT0 - b.returnDelay) / b.dur));
+        const e = 1 - (1 - p) ** 3;
+        b.x = b.sx + (view.rect.left + b.hx - b.sx) * e;
+        b.y = b.sy + (view.rect.top + b.hy - b.sy) * e;
+        if (p < 1) settled = false;
+        drawBubble(ctx, b, view.color);
+      }
+      return settled ? 'done' : 'active';
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Effect 4: Explosion — a blast from the word's center hurls tumbling shards
+// up and outward; gravity rains the debris down toward the bottom edges.
+// Click re-forms the word from the center outward.
+// ---------------------------------------------------------------------------
+
+/** Blast speed at the word's center (px/s), falling off with distance. */
+const X_BLAST_SPEED = 950;
+const X_GRAVITY = 2300;
+/** Horizontal boost so debris spreads toward the bottom corners. */
+const X_SPREAD = 1.7;
+const X_FLOOR_RESTITUTION = 0.28;
+const X_FLOOR_FRICTION = 0.86;
+/** Shockwave ring lifetime (ms). */
+const X_RING_MS = 380;
+const X_RETURN_MS = 400;
+const X_RETURN_STAGGER_MS = 160;
+/** Re-form spreads center → outward over this window. */
+const X_REFORM_SPREAD_MS = 260;
+
+interface Shard {
+  hx: number; hy: number;
+  x: number; y: number;
+  vx: number; vy: number;
+  /** Triangle geometry — three local-space vertices. */
+  verts: [number, number][];
+  angle: number; va: number;
+  /** Normalized distance from the blast center (0 = center, 1 = word edge). */
+  cdist: number;
+  sx: number; sy: number;
+  dur: number; delay: number;
+}
+
+function createExplosionEffect(): WordEffect {
+  let shards: Shard[] = [];
+  let phase: 'out' | 'back' = 'out';
+  let blastT0 = 0;
+  let returnT0 = 0;
+  let center = { x: 0, y: 0 };
+
+  const drawShard = (c: CanvasRenderingContext2D, s: Shard, color: string) => {
+    c.save();
+    c.translate(s.x, s.y);
+    c.rotate(s.angle);
+    c.fillStyle = color;
+    c.beginPath();
+    c.moveTo(s.verts[0][0], s.verts[0][1]);
+    c.lineTo(s.verts[1][0], s.verts[1][1]);
+    c.lineTo(s.verts[2][0], s.verts[2][1]);
+    c.closePath();
+    c.fill();
+    c.restore();
+  };
+
+  return {
+    init(sample, rect, t) {
+      phase = 'out';
+      blastT0 = t;
+      center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      const maxDist = Math.max(1, Math.hypot(rect.width / 2, rect.height / 2));
+
+      shards = sample.pts.map(({ hx, hy }) => {
+        const x = rect.left + hx;
+        const y = rect.top + hy;
+        let dx = x - center.x;
+        let dy = y - center.y;
+        const d = Math.hypot(dx, dy);
+        if (d < 1) {
+          // Dead-center points get a random direction
+          const a = Math.random() * Math.PI * 2;
+          dx = Math.cos(a);
+          dy = Math.sin(a);
+        } else {
+          dx /= d;
+          dy /= d;
+        }
+
+        // Speed falls off toward the word's edges + per-shard variance,
+        // horizontal component boosted so debris reaches the bottom corners.
+        const falloff = 1 - (d / maxDist) * 0.45;
+        const speed = X_BLAST_SPEED * falloff * (0.7 + Math.random() * 0.6);
+        const jitter = (Math.random() - 0.5) * 0.5;
+
+        // Irregular triangle shard sized off the sampling grid
+        const r = sample.step * (0.55 + Math.random() * 0.4);
+        const a0 = Math.random() * Math.PI * 2;
+        const verts: [number, number][] = [0, 1, 2].map((i) => {
+          const a = a0 + (i / 3) * Math.PI * 2 + (Math.random() - 0.5) * 0.7;
+          const rr = r * (0.6 + Math.random() * 0.5);
+          return [Math.cos(a) * rr, Math.sin(a) * rr] as [number, number];
+        });
+
+        return {
+          hx, hy, x, y,
+          vx: (dx + jitter) * speed * X_SPREAD,
+          // Slight upward bias so the arc reads as a blast, not a drop
+          vy: dy * speed - 180 - Math.random() * 160,
+          verts,
+          angle: Math.random() * Math.PI * 2,
+          va: (Math.random() - 0.5) * 16,
+          cdist: Math.min(1, d / maxDist),
+          sx: 0, sy: 0,
+          dur: X_RETURN_MS + Math.random() * X_RETURN_STAGGER_MS,
+          delay: 0,
+        };
+      });
+    },
+
+    release(t) {
+      phase = 'back';
+      returnT0 = t;
+      let total = 0;
+      for (const s of shards) {
+        s.sx = s.x;
+        s.sy = s.y;
+        // Re-form center → outward, the blast in reverse
+        s.delay = s.cdist * X_REFORM_SPREAD_MS;
+        const end = s.delay + s.dur;
+        if (end > total) total = end;
+      }
+      return total;
+    },
+
+    step(ctx, dt, t, view) {
+      if (phase === 'out') {
+        // Shockwave ring — expands and fades over the first few hundred ms
+        const ringP = (t - blastT0) / X_RING_MS;
+        if (ringP < 1) {
+          const base = ctx.globalAlpha;
+          ctx.globalAlpha = base * (1 - ringP) * 0.5;
+          ctx.strokeStyle = view.color;
+          ctx.lineWidth = 2 + (1 - ringP) * 3;
+          ctx.beginPath();
+          ctx.arc(center.x, center.y, 20 + ringP * ringP * 320, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.globalAlpha = base;
+        }
+
+        let allResting = ringP >= 1;
+        for (const s of shards) {
+          s.vy += X_GRAVITY * dt;
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+
+          // Floor — dull bounce, slide out with friction. Kill threshold must
+          // exceed GRAVITY * MAX_DT (~74) so shards can actually go to sleep.
+          if (s.y > view.vh - 2) {
+            s.y = view.vh - 2;
+            if (Math.abs(s.vy) > 90) {
+              s.vy = -s.vy * (X_FLOOR_RESTITUTION + Math.random() * 0.08);
+            } else {
+              s.vy = 0;
+            }
+            s.vx *= X_FLOOR_FRICTION;
+            s.va *= 0.8;
+          }
+          // Side walls
+          if (s.x < 4) {
+            s.x = 4;
+            s.vx = Math.abs(s.vx) * 0.5;
+          } else if (s.x > view.vw - 4) {
+            s.x = view.vw - 4;
+            s.vx = -Math.abs(s.vx) * 0.5;
+          }
+
+          if (s.vy !== 0 || Math.abs(s.vx) > 2) {
+            s.angle += s.va * dt;
+            allResting = false;
+          }
+          drawShard(ctx, s, view.color);
+        }
+        return allResting ? 'resting' : 'active';
+      }
+
+      // Re-form: staggered ease-out tween, center → outward
+      let settled = true;
+      for (const s of shards) {
+        const p = Math.min(1, Math.max(0, (t - returnT0 - s.delay) / s.dur));
+        const e = 1 - (1 - p) ** 3;
+        s.x = s.sx + (view.rect.left + s.hx - s.sx) * e;
+        s.y = s.sy + (view.rect.top + s.hy - s.sy) * e;
+        // Untumble so shards land aligned-ish rather than mid-spin
+        s.angle *= 1 - e * 0.12;
+        if (p < 1) settled = false;
+        drawShard(ctx, s, view.color);
+      }
+      return settled ? 'done' : 'active';
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Host component
 // ---------------------------------------------------------------------------
 
 /**
  * The hero's emphasized word. A randomly chosen effect breaks the word apart
- * on a full-viewport canvas — bouncing marbles or an eraser sweep, never the
- * same effect twice in a row. Fine pointers trigger it on hover; touch
+ * on a full-viewport canvas — bouncing marbles, an eraser sweep, rising
+ * bubbles, or a center blast — never the same effect twice in a row. Fine
+ * pointers trigger it on hover; touch
  * devices trigger it on tap. Clicking/tapping anywhere afterwards plays the
  * effect's exit and restores the text. Everything is painted with the
  * element's live computed color, so it adapts to either theme.
@@ -374,7 +776,12 @@ const InteractiveWord: React.FC = () => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
-    const effects: WordEffect[] = [createMarbleEffect(), createEraserEffect()];
+    const effects: WordEffect[] = [
+      createMarbleEffect(),
+      createEraserEffect(),
+      createBubbleEffect(),
+      createExplosionEffect(),
+    ];
     let lastEffect = -1;
 
     let mode: 'idle' | 'scattered' | 'returning' = 'idle';
@@ -420,6 +827,7 @@ const InteractiveWord: React.FC = () => {
       const data = octx.getImageData(0, 0, w, h).data;
 
       // Adapt the grid step so the particle count stays under the cap
+      const maxParticles = finePointer ? MAX_PARTICLES : MAX_PARTICLES_COARSE;
       let step = Math.max(3, Math.round(fontSize / 16));
       let pts: { hx: number; hy: number }[] = [];
       for (let attempt = 0; attempt < 4; attempt++) {
@@ -429,11 +837,11 @@ const InteractiveWord: React.FC = () => {
             if (data[(y * w + x) * 4 + 3] > 128) pts.push({ hx: x - padX, hy: y - padY });
           }
         }
-        if (pts.length <= MAX_PARTICLES) break;
+        if (pts.length <= maxParticles) break;
         step += 1;
       }
-      if (pts.length > MAX_PARTICLES) {
-        const keep = MAX_PARTICLES / pts.length;
+      if (pts.length > maxParticles) {
+        const keep = maxParticles / pts.length;
         pts = pts.filter(() => Math.random() < keep);
       }
 
@@ -442,7 +850,9 @@ const InteractiveWord: React.FC = () => {
 
     const sizeCanvas = () => {
       if (!canvas || !ctx) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Cap DPR lower on touch devices — moving particles look identical at
+      // 1.5x and the canvas pushes ~44% fewer pixels per frame.
+      const dpr = Math.min(window.devicePixelRatio || 1, finePointer ? 2 : 1.5);
       canvas.width = Math.round(window.innerWidth * dpr);
       canvas.height = Math.round(window.innerHeight * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -569,6 +979,13 @@ const InteractiveWord: React.FC = () => {
       if (sleeping) wake();
     };
 
+    // App-switch/tab-hide while scattered: tear down instead of keeping
+    // physics state alive in the background — the word is simply restored
+    // by the time the user returns.
+    const onVisibility = () => {
+      if (document.hidden && mode !== 'idle') teardown();
+    };
+
     // Fine pointers scatter on hover; everyone (touch included) can also
     // scatter with a tap/click. `click` fires after the gesture's pointerdown,
     // so a tap on the word can't release the effect it just started — and a
@@ -576,11 +993,13 @@ const InteractiveWord: React.FC = () => {
     if (finePointer) em.addEventListener('pointerenter', scatter);
     em.addEventListener('click', scatter);
     window.addEventListener('resize', onResize);
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
       em.removeEventListener('pointerenter', scatter);
       em.removeEventListener('click', scatter);
       window.removeEventListener('resize', onResize);
+      document.removeEventListener('visibilitychange', onVisibility);
       teardown();
     };
   }, []);

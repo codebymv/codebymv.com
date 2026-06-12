@@ -19,7 +19,7 @@ const About: React.FC = () => {
           <div className="lg:col-span-5">
             <div className="aspect-[4/5] overflow-hidden" style={{ backgroundColor: 'var(--bg-subtle)' }}>
               <img
-                src="/assets/images/headshot_draft.png"
+                src="/assets/images/headshot_draft.webp"
                 alt="Matt Valentine"
                 width={800}
                 height={1000}

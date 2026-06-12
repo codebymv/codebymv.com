@@ -7,7 +7,7 @@ import ffmpeg from 'ffmpeg-static';
 const URL = 'http://127.0.0.1:5173/';
 const CAPTURE_DIR = path.resolve('public/assets/images/capture_temp');
 const OUTPUT_MP4 = path.resolve('public/assets/images/sampleseeker.mp4');
-const OUTPUT_POSTER = path.resolve('public/assets/images/sampleseeker-poster.jpg');
+const OUTPUT_POSTER = path.resolve('public/assets/images/sampleseeker-poster.webp');
 
 async function main() {
   console.log('Starting Puppeteer for fully-mocked interactive SampleSeeker capture (no YouTube block)...');
@@ -454,7 +454,8 @@ async function main() {
         '-y',
         '-i', path.join(CAPTURE_DIR, 'frame-000.png'),
         '-frames:v', '1',
-        '-q:v', '4',
+        '-c:v', 'libwebp',
+        '-quality', '82',
         OUTPUT_POSTER,
       ],
       { stdio: 'inherit' }

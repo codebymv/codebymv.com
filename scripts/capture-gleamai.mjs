@@ -6,7 +6,7 @@ import ffmpeg from 'ffmpeg-static';
 
 const CAPTURE_DIR = path.resolve('public/assets/images/capture_temp_gleamai');
 const OUTPUT_MP4 = path.resolve('public/assets/images/gleamai.mp4');
-const OUTPUT_POSTER = path.resolve('public/assets/images/gleamai-poster.jpg');
+const OUTPUT_POSTER = path.resolve('public/assets/images/gleamai-poster.webp');
 
 // Production site — avoids the Next.js dev-tools badge that local dev injects.
 const SITE_URL = 'https://gleamai.dev';
@@ -645,7 +645,7 @@ async function main() {
     const posterFrame = path.join(CAPTURE_DIR, 'frame-014.png');
     execFileSync(
       ffmpeg,
-      ['-y', '-i', posterFrame, '-frames:v', '1', '-update', '1', '-q:v', '4', OUTPUT_POSTER],
+      ['-y', '-i', posterFrame, '-frames:v', '1', '-update', '1', '-c:v', 'libwebp', '-quality', '82', OUTPUT_POSTER],
       { stdio: 'inherit' },
     );
 

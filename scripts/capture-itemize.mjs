@@ -6,7 +6,7 @@ import ffmpeg from 'ffmpeg-static';
 
 const CAPTURE_DIR = path.resolve('public/assets/images/capture_temp_itemize');
 const OUTPUT_MP4 = path.resolve('public/assets/images/itemize.mp4');
-const OUTPUT_POSTER = path.resolve('public/assets/images/itemize-poster.jpg');
+const OUTPUT_POSTER = path.resolve('public/assets/images/itemize-poster.webp');
 
 const LOGIN_EMAIL = 'mevmusicofficial@gmail.com';
 const LOGIN_PASSWORD = 'M@tthew56565';
@@ -641,7 +641,7 @@ async function main() {
     const posterFrame = path.join(CAPTURE_DIR, 'frame-006.png');
     execFileSync(
       ffmpeg,
-      ['-y', '-i', posterFrame, '-frames:v', '1', '-update', '1', '-q:v', '4', OUTPUT_POSTER],
+      ['-y', '-i', posterFrame, '-frames:v', '1', '-update', '1', '-c:v', 'libwebp', '-quality', '82', OUTPUT_POSTER],
       { stdio: 'inherit' },
     );
 

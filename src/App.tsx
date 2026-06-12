@@ -2,8 +2,10 @@ import { Suspense, lazy } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+// Hero is the LCP — load it eagerly to avoid a chunk round-trip before first
+// paint. Below-fold sections stay lazy.
+import Hero from './components/Hero';
 
-const Hero = lazy(() => import('./components/Hero'));
 const Work = lazy(() => import('./components/Work'));
 const Capabilities = lazy(() => import('./components/Capabilities'));
 const About = lazy(() => import('./components/About'));
@@ -20,9 +22,7 @@ function App() {
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       <Navbar />
       <main>
-        <Suspense fallback={<Fallback />}>
-          <Hero />
-        </Suspense>
+        <Hero />
 
         <Suspense fallback={<Fallback />}>
           <Work />

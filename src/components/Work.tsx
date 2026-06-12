@@ -54,6 +54,15 @@ const projects: Project[] = [
     // kind: 'Client',
   },
   {
+    title: 'TucsonLovesMusic.com',
+    description: 'A full-stack platform connecting Tucson\'s local music community through live event listings, venue profiles, and talent discovery.',
+    media: 'tucsonlovesmusic',
+    tags: ['Next.js (React)', 'TypeScript', 'NestJS', 'PostgreSQL', 'Auth0'],
+    link: 'https://tucsonlovesmusic.com',
+    year: '2025',
+    // kind: 'Client',
+  },
+  {
     title: 'MixFade.com & MixFade Desktop',
     description: 'Analytical tool with a comparative audio playback engine and sleek A/B metering.',
     media: 'mixfade',
@@ -124,7 +133,7 @@ const WorkEntry: React.FC<{ project: Project; index: number; featured?: boolean 
           <div className="aspect-[16/10] overflow-hidden" style={{ backgroundColor: 'var(--bg-subtle)' }}>
             <ProjectMedia
               src={`/assets/images/${project.media}.mp4`}
-              poster={`/assets/images/${project.media}-poster.jpg`}
+              poster={`/assets/images/${project.media}-poster.webp`}
               label={`${project.title} preview`}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
             />

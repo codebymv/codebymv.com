@@ -28,7 +28,9 @@ const Navbar: React.FC = () => {
       <nav
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b ${
           scrolled
-            ? 'py-3 bg-[color:var(--bg-primary)]/85 backdrop-blur-md border-[color:var(--border)]'
+            ? // Near-solid bg on mobile — backdrop blur repaints every scrolled
+              // frame and is expensive on low-end phone GPUs. Blur on md+ only.
+              'py-3 bg-[color:var(--bg-primary)]/95 md:bg-[color:var(--bg-primary)]/85 md:backdrop-blur-md border-[color:var(--border)]'
             : 'py-5 bg-transparent border-transparent'
         }`}
       >
@@ -68,9 +70,9 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button — p-3 keeps the tap target at ~44px */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-3 -mr-3"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
             style={{ color: 'var(--text-primary)' }}
@@ -97,7 +99,7 @@ const Navbar: React.FC = () => {
               style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
             />
           </a>
-          <button onClick={() => setMenuOpen(false)} aria-label="Close menu" className="p-2">
+          <button onClick={() => setMenuOpen(false)} aria-label="Close menu" className="p-3 -mr-3">
             <X size={20} />
           </button>
         </div>
@@ -125,7 +127,7 @@ const Navbar: React.FC = () => {
             <LocalTime />
             <button
               onClick={toggleTheme}
-              className="p-2"
+              className="p-3 -mr-3"
               style={{ color: 'var(--text-secondary)' }}
               aria-label="Toggle theme"
             >
