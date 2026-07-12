@@ -20,6 +20,7 @@ const Contact: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const e: FormErrors = {};
@@ -35,6 +36,7 @@ const Contact: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
+    setSubmitError(null);
 
     const formEl = e.target as HTMLFormElement;
     const data = new FormData(formEl);
@@ -44,7 +46,8 @@ const Contact: React.FC = () => {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
     })
-      .then(() => {
+      .then((res) => {
+        if (!res.ok) throw new Error('Submit failed');
         setLoading(false);
         setSubmitted(true);
         setForm({ name: '', email: '', message: '' });
@@ -52,7 +55,7 @@ const Contact: React.FC = () => {
       })
       .catch(() => {
         setLoading(false);
-        alert('Error submitting form. Please try again.');
+        setSubmitError('Something went wrong. Please try again or email me directly.');
       });
   };
 
@@ -107,13 +110,13 @@ const Contact: React.FC = () => {
                     GitHub
                   </a>
                   <a
-                    href="https://twitter.com/codebymv"
+                    href="https://x.com/codebymv"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="link-draw transition-colors duration-200 hover:text-[color:var(--accent)]"
                     style={{ color: 'var(--text-secondary)' }}
                   >
-                    Twitter
+                    X
                   </a>
                 </div>
               </div>
@@ -206,6 +209,12 @@ const Contact: React.FC = () => {
                       </p>
                     )}
                   </div>
+
+                  {submitError && (
+                    <p className="font-mono text-xs" style={{ color: 'var(--accent)' }} role="alert">
+                      {submitError}
+                    </p>
+                  )}
 
                   <button
                     type="submit"

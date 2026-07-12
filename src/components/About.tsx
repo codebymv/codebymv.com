@@ -35,17 +35,19 @@ const About: React.FC = () => {
           {/* Bio */}
           <div className="lg:col-span-7 max-w-xl">
             <p className="text-xl md:text-2xl leading-snug tracking-[-0.01em] mb-8">
-              I genuinely enjoy going deep on new technologies to build cool things that I enjoy and people use!
+              Full-stack engineer in Tucson — shipping products on the web and tools for people who make music.
             </p>
 
             <div className="space-y-5 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               <p>
-                Based in Tucson, AZ, I'm a full-stack developer who can competently solve problems across the stack of various systems.
-                I've worked with businesses to enhance their web presence, automate workflows with AI, and find the right
-                solutions for their challenges.
+                I work across the stack with businesses to sharpen their web presence, automate workflows
+                with AI, and choose systems that fit the problem — not the other way around. Day to day that
+                means React and TypeScript on the front, solid APIs and data layers behind them, and enough
+                product sense to keep the build useful.
               </p>
               <p>
-                Beyond code, I produce music and build audio tools.{' '}
+                The other half of my practice is audio. I produce music and design the tools I wish existed —
+                from{' '}
                 <a
                   href="https://opaquesound.com"
                   target="_blank"
@@ -54,8 +56,8 @@ const About: React.FC = () => {
                   style={{ color: 'var(--accent)' }}
                 >
                   OpaqueSound.com
-                </a>{' '}
-                sells digital audio production assets, and{' '}
+                </a>
+                , a storefront for digital production assets, to{' '}
                 <a
                   href="https://mixfade.com"
                   target="_blank"
@@ -64,8 +66,8 @@ const About: React.FC = () => {
                   style={{ color: 'var(--accent)' }}
                 >
                   MixFade
-                </a>{' '}
-                is a comparative audio analysis tool I designed and built from scratch. VST coming soon!
+                </a>
+                , a comparative A/B analysis app I designed and built from scratch. VST coming soon.
               </p>
             </div>
 

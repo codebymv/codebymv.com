@@ -14,8 +14,42 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" id="meta-theme-color" content="#FAFAF7" />
+    <link rel="canonical" href="https://codebymv.com/" />
     <link rel="icon" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://codebymv.com/#website",
+            "url": "https://codebymv.com/",
+            "name": "codebymv",
+            "description": "Matt Valentine is a full-stack developer based in Tucson, AZ, building interactive experiences for the web.",
+            "publisher": { "@id": "https://codebymv.com/#person" }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://codebymv.com/#person",
+            "name": "Matt Valentine",
+            "url": "https://codebymv.com/",
+            "email": "mailto:codebymv@gmail.com",
+            "jobTitle": "Full-Stack Developer",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Tucson",
+              "addressRegion": "AZ",
+              "addressCountry": "US"
+            },
+            "sameAs": [
+              "https://github.com/codebymv",
+              "https://x.com/codebymv"
+            ]
+          }
+        ]
+      }
+    </script>
     <!-- Apply the theme before first paint so dark-mode users never see a
          white flash. Kept inline and tiny on purpose. -->
     <script>

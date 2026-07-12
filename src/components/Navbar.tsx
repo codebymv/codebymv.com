@@ -1,14 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Sun, Moon, Menu, X } from './icons';
 import LocalTime from './LocalTime';
 
-const navLinks = ['Work', 'About', 'Contact'];
+const navLinks = ['Work', 'Capabilities', 'About', 'Contact'];
+
+const Wordmark: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
+  <a
+    href="#home"
+    onClick={onClick}
+    className="font-medium text-lg tracking-[-0.03em] transition-colors duration-200 hover:text-[color:var(--accent)]"
+    style={{ color: 'var(--text-primary)' }}
+  >
+    codebymv
+  </a>
+);
 
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -23,6 +37,47 @@ const Navbar: React.FC = () => {
     };
   }, [menuOpen]);
 
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+    // Restore focus to the opener on the next frame after unmount/hide
+    requestAnimationFrame(() => menuButtonRef.current?.focus());
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    closeButtonRef.current?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMenu();
+        return;
+      }
+
+      if (e.key !== 'Tab' || !overlayRef.current) return;
+
+      const focusable = overlayRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen, closeMenu]);
+
   return (
     <header>
       <nav
@@ -35,15 +90,7 @@ const Navbar: React.FC = () => {
         }`}
       >
         <div className="section-container flex items-center justify-between">
-          {/* Logo */}
-          <a href="#home" className="flex items-center h-8">
-            <img
-              src="/assets/images/mv full logo_transparent.png"
-              alt="codebymv"
-              className="h-full w-auto object-contain"
-              style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
-            />
-          </a>
+          <Wordmark />
 
           {/* Desktop */}
           <div className="hidden md:flex items-center gap-8">
@@ -72,9 +119,12 @@ const Navbar: React.FC = () => {
 
           {/* Mobile menu button — p-3 keeps the tap target at ~44px */}
           <button
+            ref={menuButtonRef}
             className="md:hidden p-3 -mr-3"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
             style={{ color: 'var(--text-primary)' }}
           >
             <Menu size={20} />
@@ -84,6 +134,11 @@ const Navbar: React.FC = () => {
 
       {/* Mobile overlay */}
       <div
+        ref={overlayRef}
+        id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation"
         className={`fixed inset-0 z-[60] flex flex-col transition-opacity duration-300 md:hidden ${
           menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
@@ -91,15 +146,13 @@ const Navbar: React.FC = () => {
         aria-hidden={!menuOpen}
       >
         <div className={`section-container flex items-center justify-between ${scrolled ? 'py-3' : 'py-5'}`}>
-          <a href="#home" onClick={() => setMenuOpen(false)} className="flex items-center h-8">
-            <img
-              src="/assets/images/mv full logo_transparent.png"
-              alt="codebymv"
-              className="h-full w-auto object-contain"
-              style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
-            />
-          </a>
-          <button onClick={() => setMenuOpen(false)} aria-label="Close menu" className="p-3 -mr-3">
+          <Wordmark onClick={closeMenu} />
+          <button
+            ref={closeButtonRef}
+            onClick={closeMenu}
+            aria-label="Close menu"
+            className="p-3 -mr-3"
+          >
             <X size={20} />
           </button>
         </div>
@@ -110,7 +163,7 @@ const Navbar: React.FC = () => {
             <a
               key={link}
               href={`#${link.toLowerCase()}`}
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenu}
               className={`flex items-baseline gap-4 py-4 border-b border-[color:var(--border)] transition-all duration-500 ${
                 menuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
               }`}

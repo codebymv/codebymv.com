@@ -26,13 +26,14 @@ const Hero: React.FC = () => {
           <span className={headlineClass}>
             www<span className="opacity-100">.</span><span className="opacity-60">.</span><span className="opacity-30">.</span>
           </span>
-          {/* <p
-            className="flex items-center gap-3 font-mono text-[0.6875rem] tracking-[0.2em] uppercase md:shrink-0 md:pb-2"
+          <a
+            href="#contact"
+            className="flex items-center gap-3 font-mono text-[0.6875rem] tracking-[0.2em] uppercase md:shrink-0 md:pb-2 transition-colors duration-200 hover:text-[color:var(--accent)]"
             style={{ color: 'var(--text-secondary)' }}
           >
             <span className="pulse-dot" />
             Open to new projects
-          </p> */}
+          </a>
         </div>
 
         {/* Baseline row */}

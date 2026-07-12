@@ -36,6 +36,9 @@ const PlayerBar: React.FC = () => {
   const atQueueStart = queue.length > 0 && currentIndex <= 0;
   const atQueueEnd = queue.length > 0 && currentIndex >= queue.length - 1;
 
+  // Slim idle chrome until the user plays, pauses, expands, or hits an error
+  const slim = !expanded && (status === 'idle' || status === 'ready');
+
   const title = isError
     ? "Couldn't load player"
     : current?.title ?? (isLoading || status === 'idle' ? 'Loading…' : '—');
@@ -47,6 +50,61 @@ const PlayerBar: React.FC = () => {
     }
     togglePlay();
   };
+
+  if (slim) {
+    return (
+      <div
+        role="region"
+        aria-label="Music player"
+        className="player-bar border-t border-[color:var(--border)]"
+        style={{ backgroundColor: 'var(--bg-elevated)' }}
+      >
+        <div className="section-container flex items-center gap-3 h-[var(--player-bar-height)]">
+          <div
+            className="shrink-0 w-10 h-10 overflow-hidden"
+            style={{ backgroundColor: 'var(--bg-subtle)' }}
+          >
+            {current?.artworkUrl ? (
+              <img
+                src={current.artworkUrl}
+                alt=""
+                width={40}
+                height={40}
+                className="w-full h-full object-cover"
+              />
+            ) : null}
+          </div>
+
+          <p className="flex-1 min-w-0 text-sm font-medium tracking-[-0.01em] truncate">
+            Listen
+          </p>
+
+          <button
+            type="button"
+            onClick={handlePlay}
+            disabled={isLoading}
+            className="p-2.5 transition-colors duration-200 hover:text-[color:var(--accent)] disabled:opacity-50"
+            style={{ color: 'var(--text-primary)' }}
+            aria-label="Play"
+          >
+            <Play size={18} />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setExpanded(true)}
+            className="p-2.5 transition-colors duration-200 hover:text-[color:var(--accent)]"
+            style={{ color: 'var(--text-secondary)' }}
+            aria-expanded={false}
+            aria-controls="player-panel"
+            aria-label="Expand player"
+          >
+            <ChevronUp size={18} />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
