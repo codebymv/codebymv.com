@@ -1,4 +1,4 @@
-/** Event names from w.soundcloud.com/player/api.js — must match exactly. */
+/** Event names from w.soundcloud.com/player/api.js - must match exactly. */
 export const SCWidgetEvents = {
   READY: 'ready',
   PLAY: 'play',

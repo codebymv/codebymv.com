@@ -15,7 +15,7 @@ const SITE_URL = 'https://itemize.cloud';
 const API_HOST = 'itemize-backend-production-92ad.up.railway.app';
 
 // ---------------------------------------------------------------------------
-// Mock data — every backend /api request is intercepted. The login is mocked
+// Mock data - every backend /api request is intercepted. The login is mocked
 // silently, then the Workspace Canvas is rendered with a curated collage of
 // sample lists, notes, a whiteboard sketch and a locked vault.
 // ---------------------------------------------------------------------------
@@ -165,9 +165,9 @@ const MOCK_LISTS = [
     category: 'General',
     items: [
       { id: 'i1', text: 'Designing Data-Intensive Applications', completed: true },
-      { id: 'i2', text: 'The Art of Mixing — D. Gibson', completed: false },
+      { id: 'i2', text: 'The Art of Mixing - D. Gibson', completed: false },
       { id: 'i3', text: 'Refactoring UI', completed: false },
-      { id: 'i4', text: 'Mastering Audio — B. Katz', completed: false },
+      { id: 'i4', text: 'Mastering Audio - B. Katz', completed: false },
     ],
     color_value: '#10b981',
     position_x: 2170,
@@ -182,7 +182,7 @@ const MOCK_NOTES = [
   {
     id: 401,
     user_id: 1,
-    title: 'Mix Notes — Vocal Sessions',
+    title: 'Mix Notes - Vocal Sessions',
     content:
       '<p>Lead vocal: ride 2-3 dB into chorus, de-ess around 6.8k.</p><p>Print both the dry stack and the quarter-note delay throw for the bridge.</p>',
     category: 'Audio Engineering',

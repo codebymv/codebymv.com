@@ -26,6 +26,6 @@ export function persistVolume(value: number): void {
       localStorage.setItem(STORAGE_KEY, String(clamped));
     }
   } catch {
-    // Private mode / quota — ignore
+    // Private mode / quota - ignore
   }
 }

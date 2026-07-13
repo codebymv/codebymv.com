@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 /* ========================================
-   QUIET EDITORIAL — Design System
+   QUIET EDITORIAL - Design System
    ======================================== */
 
 :root {
   /* Native form controls / scrollbars follow the active theme */
   color-scheme: light;
 
-  /* Light theme (default) — warm paper */
+  /* Light theme (default) - warm paper */
   --bg-primary: #FAFAF7;
   --bg-elevated: #FFFFFF;
   --bg-subtle: #F1F1EC;
@@ -62,7 +62,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Desktop type bump — replaces the old html { zoom: 1.1 } hack */
+/* Desktop type bump - replaces the old html { zoom: 1.1 } hack */
 @media (min-width: 1024px) {
   body {
     font-size: 1.0625rem;
@@ -103,7 +103,7 @@ code, pre, .font-mono {
 }
 
 /* ========================================
-   Selection — the one place color floods
+   Selection - the one place color floods
    ======================================== */
 
 ::selection {
@@ -112,7 +112,7 @@ code, pre, .font-mono {
 }
 
 /* ========================================
-   Eyebrow — section grammar
+   Eyebrow - section grammar
    ======================================== */
 
 .eyebrow {
@@ -166,7 +166,7 @@ code, pre, .font-mono {
 }
 
 /* ========================================
-   Hero entry — one orchestrated reveal
+   Hero entry - one orchestrated reveal
    ======================================== */
 
 @keyframes fadeRise {
@@ -240,7 +240,7 @@ button:focus-visible {
 }
 
 /* ========================================
-   Performance — below-fold sections
+   Performance - below-fold sections
    ======================================== */
 
 .cv-auto {
@@ -375,7 +375,7 @@ button:focus-visible {
   cursor: not-allowed;
 }
 
-/* Volume — thumb matches transport controls, not accent */
+/* Volume - thumb matches transport controls, not accent */
 .player-volume {
   -webkit-appearance: none;
   appearance: none;

@@ -30,9 +30,12 @@ const groups: Group[] = [
   {
     label: 'Models & Harnesses',
     items: [
-      { name: 'Claude Code', tag: 'CLI' },
-      { name: 'Codex', tag: 'CLI' },
-      { name: 'Cursor', tag: 'IDE' },
+      { name: "Anthropic's Claude Code (Haiku, Sonnet, Opus, Fable)", tag: 'CLI' },
+      { name: "OpenAI's Codex (GPT 5-5.5)", tag: 'CLI' },
+      { name: 'VS Code (Copilot, misc)', tag: 'IDE' },
+      { name: 'Cursor (Composer 2.5, misc)', tag: 'IDE' },
+      { name: 'Windsurf (SWE 1.6, misc)', tag: 'IDE' },
+      { name: 'Kiro (Antigravity)', tag: 'IDE' },
     ],
   },
 ];

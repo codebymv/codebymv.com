@@ -312,6 +312,27 @@ export function useSoundCloudWidget(iframeRef: React.RefObject<HTMLIFrameElement
     return () => document.removeEventListener('click', onLinkClick, true);
   }, []);
 
+  // Mobile lock / app switch: SoundCloud iframes can keep streaming in the
+  // background. Pause when the page is hidden so locked phones go silent.
+  useEffect(() => {
+    const isMobile = () =>
+      window.matchMedia('(pointer: coarse), (max-width: 767px)').matches;
+
+    const pauseIfBackground = () => {
+      if (!document.hidden) return;
+      if (!isMobile()) return;
+      if (statusRef.current !== 'playing') return;
+      widgetRef.current?.pause();
+    };
+
+    document.addEventListener('visibilitychange', pauseIfBackground);
+    window.addEventListener('pagehide', pauseIfBackground);
+    return () => {
+      document.removeEventListener('visibilitychange', pauseIfBackground);
+      window.removeEventListener('pagehide', pauseIfBackground);
+    };
+  }, []);
+
   return {
     status,
     current,

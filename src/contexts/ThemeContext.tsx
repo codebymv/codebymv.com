@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const STORAGE_KEY = 'theme';
 
 function getInitialTheme(): Theme {
-  // The inline script in index.html already applied the class pre-paint —
+  // The inline script in index.html already applied the class pre-paint -
   // treat it as the source of truth so React and the DOM never disagree.
   if (document.documentElement.classList.contains('dark-theme')) return 'dark';
   if (document.documentElement.classList.contains('light-theme')) return 'light';

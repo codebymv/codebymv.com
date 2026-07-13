@@ -3,7 +3,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { AudioPlayerProvider } from './contexts/AudioPlayerContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-// Hero is the LCP — load it eagerly to avoid a chunk round-trip before first
+// Hero is the LCP - load it eagerly to avoid a chunk round-trip before first
 // paint. Below-fold sections stay lazy.
 import Hero from './components/Hero';
 

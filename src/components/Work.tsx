@@ -7,9 +7,9 @@ import { useInView } from '../hooks/useInView';
 interface Project {
   title: string;
   description: string;
-  /** Short impact line — shown on featured entries only */
+  /** Short impact line - shown on featured entries only */
   outcome?: string;
-  /** Base name in /assets/images — resolves to {media}.mp4 + {media}-poster.webp */
+  /** Base name in /assets/images - resolves to {media}.mp4 + {media}-poster.webp */
   media: string;
   tags: string[];
   link: string;

@@ -104,7 +104,7 @@ async function main() {
     console.log('Clicking the event card...');
     await card.click();
 
-    // Next.js client-side navigation — wait for the URL to change
+    // Next.js client-side navigation - wait for the URL to change
     await page.waitForFunction(
       (prev) => location.pathname !== prev,
       { timeout: 30000 },

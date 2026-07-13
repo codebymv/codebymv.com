@@ -5,16 +5,20 @@ import LocalTime from './LocalTime';
 
 const navLinks = ['Work', 'Capabilities', 'About', 'Contact'];
 
-const Wordmark: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
-  <a
-    href="#home"
-    onClick={onClick}
-    className="font-medium text-lg tracking-[-0.03em] transition-colors duration-200 hover:text-[color:var(--accent)]"
-    style={{ color: 'var(--text-primary)' }}
-  >
-    codebymv
-  </a>
-);
+const Wordmark: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
+  const { theme } = useTheme();
+
+  return (
+    <a href="#home" onClick={onClick} className="flex items-center h-8">
+      <img
+        src="/assets/images/mv full logo_transparent.png"
+        alt="codebymv"
+        className="h-full w-auto object-contain"
+        style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
+      />
+    </a>
+  );
+};
 
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -83,7 +87,7 @@ const Navbar: React.FC = () => {
       <nav
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b ${
           scrolled
-            ? // Near-solid bg on mobile — backdrop blur repaints every scrolled
+            ? // Near-solid bg on mobile - backdrop blur repaints every scrolled
               // frame and is expensive on low-end phone GPUs. Blur on md+ only.
               'py-3 bg-[color:var(--bg-primary)]/95 md:bg-[color:var(--bg-primary)]/85 md:backdrop-blur-md border-[color:var(--border)]'
             : 'py-5 bg-transparent border-transparent'
@@ -117,7 +121,7 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobile menu button — p-3 keeps the tap target at ~44px */}
+          {/* Mobile menu button - p-3 keeps the tap target at ~44px */}
           <button
             ref={menuButtonRef}
             className="md:hidden p-3 -mr-3"

@@ -35,18 +35,18 @@ const About: React.FC = () => {
           {/* Bio */}
           <div className="lg:col-span-7 max-w-xl">
             <p className="text-xl md:text-2xl leading-snug tracking-[-0.01em] mb-8">
-              Full-stack engineer in Tucson — shipping products on the web and tools for people who make music.
+              Full-stack engineer in Tucson, shipping products on the web and tools for people who make music.
             </p>
 
             <div className="space-y-5 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               <p>
                 I work across the stack with businesses to sharpen their web presence, automate workflows
-                with AI, and choose systems that fit the problem — not the other way around. Day to day that
+                with AI, and choose systems that fit the problem, not the other way around. Day to day that
                 means React and TypeScript on the front, solid APIs and data layers behind them, and enough
                 product sense to keep the build useful.
               </p>
               <p>
-                The other half of my practice is audio. I produce music and design the tools I wish existed —
+                The other half of my practice is audio. I produce music and design the tools I wish existed,
                 from{' '}
                 <a
                   href="https://opaquesound.com"

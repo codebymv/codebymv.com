@@ -121,11 +121,11 @@ const PlayerPanel: React.FC = () => {
                   </a>
                 ) : (
                   <p className="text-base font-medium tracking-[-0.01em] truncate">
-                    {current?.title ?? '—'}
+                    {current?.title ?? '-'}
                   </p>
                 )}
                 <p className="text-sm truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                  {current?.artist ?? '—'}
+                  {current?.artist ?? '-'}
                 </p>
               </div>
             </div>

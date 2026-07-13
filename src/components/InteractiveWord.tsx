@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from 'react';
 
 const WORD = 'interactive';
 
-/** Hard cap on particle count — sampling step adapts to stay under this. */
+/** Hard cap on particle count - sampling step adapts to stay under this. */
 const MAX_PARTICLES = 320;
 /** Lower budget for touch devices, where GPUs/CPUs tend to be weaker. */
 const MAX_PARTICLES_COARSE = 200;
-/** Max physics timestep (s) — clamps tab-switch jumps. */
+/** Max physics timestep (s) - clamps tab-switch jumps. */
 const MAX_DT = 0.032;
 
 // ---------------------------------------------------------------------------
@@ -16,7 +16,7 @@ const MAX_DT = 0.032;
 interface SampledWord {
   /** Filled glyph points as offsets relative to the word's bounding box. */
   pts: { hx: number; hy: number }[];
-  /** Grid step used for sampling — particle sizing derives from this. */
+  /** Grid step used for sampling - particle sizing derives from this. */
   step: number;
   /** The rasterized word (CSS pixels), padded by padX/padY. */
   raster: HTMLCanvasElement;
@@ -27,9 +27,9 @@ interface SampledWord {
 interface View {
   vw: number;
   vh: number;
-  /** Live bounding rect of the word — recomputed every frame. */
+  /** Live bounding rect of the word - recomputed every frame. */
   rect: DOMRect;
-  /** Live computed text color — theme toggles repaint correctly. */
+  /** Live computed text color - theme toggles repaint correctly. */
   color: string;
 }
 
@@ -49,7 +49,7 @@ interface WordEffect {
 }
 
 // ---------------------------------------------------------------------------
-// Effect 1: Marbles — bouncy cascade to the viewport floor
+// Effect 1: Marbles - bouncy cascade to the viewport floor
 // ---------------------------------------------------------------------------
 
 const M_GRAVITY = 2600;
@@ -139,7 +139,7 @@ function createMarbleEffect(): WordEffect {
           m.x += m.vx * dt;
           m.y += m.vy * dt;
 
-          // Floor — bounce, then roll with friction. The bounce-kill threshold
+          // Floor - bounce, then roll with friction. The bounce-kill threshold
           // must exceed GRAVITY * MAX_DT (~83) or marbles micro-bounce forever
           // and the loop can never sleep.
           if (m.y + m.r > view.vh) {
@@ -166,7 +166,7 @@ function createMarbleEffect(): WordEffect {
         return allResting ? 'resting' : 'active';
       }
 
-      // Fixed-duration ease-out tween — frame-rate independent regroup.
+      // Fixed-duration ease-out tween - frame-rate independent regroup.
       let settled = true;
       for (const m of marbles) {
         const p = Math.min(1, (t - returnT0) / m.dur);
@@ -182,7 +182,7 @@ function createMarbleEffect(): WordEffect {
 }
 
 // ---------------------------------------------------------------------------
-// Effect 2: Eraser — an invisible front sweeps the word away into crumbs that
+// Effect 2: Eraser - an invisible front sweeps the word away into crumbs that
 // pile up just below the baseline; click re-writes the word left → right
 // ---------------------------------------------------------------------------
 
@@ -190,7 +190,7 @@ const E_SWEEP_MS = 700;
 const E_GRAVITY = 1500;
 const E_RETURN_MS = 300;
 const E_RETURN_STAGGER_MS = 140;
-/** Click-to-rewrite spread — crumbs return in x order over this window. */
+/** Click-to-rewrite spread - crumbs return in x order over this window. */
 const E_REWRITE_SPREAD_MS = 320;
 
 interface Crumb {
@@ -308,10 +308,10 @@ function createEraserEffect(): WordEffect {
           m.x += m.vx * dt;
           m.y += m.vy * dt;
 
-          // Same floor as the marbles — the bottom of the viewport
+          // Same floor as the marbles - the bottom of the viewport
           if (m.y + m.ry > view.vh) {
             m.y = view.vh - m.ry;
-            // Crumbs land dead — a dull thud, barely a bounce
+            // Crumbs land dead - a dull thud, barely a bounce
             if (Math.abs(m.vy) > 120) {
               m.vy = -m.vy * 0.15;
             } else {
@@ -354,12 +354,12 @@ function createEraserEffect(): WordEffect {
 }
 
 // ---------------------------------------------------------------------------
-// Effect 3: Bubbles — the word fizzes into bubbles that wobble upward and settle
+// Effect 3: Bubbles - the word fizzes into bubbles that wobble upward and settle
 // against the top of the viewport; click pulls them back down into the word
 // ---------------------------------------------------------------------------
 
 const B_BUOYANCY = -420;
-/** Staggered lift-off window — the word fizzes apart rather than detaching all at once. */
+/** Staggered lift-off window - the word fizzes apart rather than detaching all at once. */
 const B_LIFT_STAGGER_MS = 720;
 /** Per-bubble ease-in before full buoyancy kicks in. */
 const B_LIFT_RAMP_MS = 320;
@@ -367,7 +367,7 @@ const B_LIFT_RAMP_MS = 320;
 const B_CEILING_EASE = 56;
 const B_RETURN_MS = 460;
 const B_RETURN_STAGGER_MS = 240;
-/** Top bubbles wait slightly longer on restore — a gentle cascade downward. */
+/** Top bubbles wait slightly longer on restore - a gentle cascade downward. */
 const B_RETURN_Y_STAGGER_MS = 280;
 
 interface Bubble {
@@ -375,7 +375,7 @@ interface Bubble {
   x: number; y: number;
   vy: number;
   r: number;
-  /** Horizontal wobble — position offset from anchorX, not integrated velocity. */
+  /** Horizontal wobble - position offset from anchorX, not integrated velocity. */
   phase: number; freq: number;
   amp: number; maxAmp: number;
   /** Per-bubble rise terminal velocity (px/s, negative = up). */
@@ -383,7 +383,7 @@ interface Bubble {
   delay: number;
   /** Timestamp when this bubble detached; 0 while still glued to the word. */
   liftAt: number;
-  /** X at lift-off — wobble oscillates around this anchor. */
+  /** X at lift-off - wobble oscillates around this anchor. */
   anchorX: number;
   ceiling: boolean;
   sx: number; sy: number;
@@ -420,7 +420,7 @@ function createBubbleEffect(): WordEffect {
     c.arc(b.x, b.y, b.r, 0, Math.PI * 2);
     c.stroke();
 
-    // Specular glint — a short inner arc in the upper left. Same color as the
+    // Specular glint - a short inner arc in the upper left. Same color as the
     // rim so it works in both themes.
     c.globalAlpha = base * 0.55;
     c.lineWidth = Math.max(1, b.r * 0.12);
@@ -491,7 +491,7 @@ function createBubbleEffect(): WordEffect {
               // Tiny initial kick so lift-off isn't a dead start
               b.vy = -30 - Math.random() * 40;
             } else {
-              // Still attached — track the live word position until lift-off
+              // Still attached - track the live word position until lift-off
               b.anchorX = view.rect.left + b.hx;
               b.x = b.anchorX;
               b.y = view.rect.top + b.hy;
@@ -526,12 +526,12 @@ function createBubbleEffect(): WordEffect {
               b.ceiling = true;
             }
           } else {
-            // At ceiling — wobble amplitude decays smoothly (frame-rate independent)
+            // At ceiling - wobble amplitude decays smoothly (frame-rate independent)
             b.amp = Math.max(0, b.amp * Math.exp(-5 * dt));
             applyWobble(b, t);
           }
 
-          // Soft side walls — nudge anchor so wobble doesn't clip harshly
+          // Soft side walls - nudge anchor so wobble doesn't clip harshly
           if (b.x - b.r < 0) {
             b.anchorX += b.r - b.x;
             b.x = b.r;
@@ -562,7 +562,7 @@ function createBubbleEffect(): WordEffect {
 }
 
 // ---------------------------------------------------------------------------
-// Effect 4: Explosion — a blast from the word's center hurls tumbling shards
+// Effect 4: Explosion - a blast from the word's center hurls tumbling shards
 // up and outward; gravity rains the debris down toward the bottom edges.
 // Click re-forms the word from the center outward.
 // ---------------------------------------------------------------------------
@@ -585,7 +585,7 @@ interface Shard {
   hx: number; hy: number;
   x: number; y: number;
   vx: number; vy: number;
-  /** Triangle geometry — three local-space vertices. */
+  /** Triangle geometry - three local-space vertices. */
   verts: [number, number][];
   angle: number; va: number;
   /** Normalized distance from the blast center (0 = center, 1 = word edge). */
@@ -686,7 +686,7 @@ function createExplosionEffect(): WordEffect {
 
     step(ctx, dt, t, view) {
       if (phase === 'out') {
-        // Shockwave ring — expands and fades over the first few hundred ms
+        // Shockwave ring - expands and fades over the first few hundred ms
         const ringP = (t - blastT0) / X_RING_MS;
         if (ringP < 1) {
           const base = ctx.globalAlpha;
@@ -705,7 +705,7 @@ function createExplosionEffect(): WordEffect {
           s.x += s.vx * dt;
           s.y += s.vy * dt;
 
-          // Floor — dull bounce, slide out with friction. Kill threshold must
+          // Floor - dull bounce, slide out with friction. Kill threshold must
           // exceed GRAVITY * MAX_DT (~74) so shards can actually go to sleep.
           if (s.y > view.vh - 2) {
             s.y = view.vh - 2;
@@ -758,8 +758,8 @@ function createExplosionEffect(): WordEffect {
 
 /**
  * The hero's emphasized word. A randomly chosen effect breaks the word apart
- * on a full-viewport canvas — bouncing marbles, an eraser sweep, rising
- * bubbles, or a center blast — never the same effect twice in a row. Fine
+ * on a full-viewport canvas - bouncing marbles, an eraser sweep, rising
+ * bubbles, or a center blast - never the same effect twice in a row. Fine
  * pointers trigger it on hover; touch
  * devices trigger it on tap. Clicking/tapping anywhere afterwards plays the
  * effect's exit and restores the text. Everything is painted with the
@@ -790,7 +790,7 @@ const InteractiveWord: React.FC = () => {
     let ctx: CanvasRenderingContext2D | null = null;
     let raf = 0;
     let lastT = 0;
-    /** Exit tween window — drives the particle → text crossfade. */
+    /** Exit tween window - drives the particle → text crossfade. */
     let returnT0 = 0;
     let returnTotal = 0;
     /** True when the effect reported 'resting' and the rAF loop is paused. */
@@ -850,7 +850,7 @@ const InteractiveWord: React.FC = () => {
 
     const sizeCanvas = () => {
       if (!canvas || !ctx) return;
-      // Cap DPR lower on touch devices — moving particles look identical at
+      // Cap DPR lower on touch devices - moving particles look identical at
       // 1.5x and the canvas pushes ~44% fewer pixels per frame.
       const dpr = Math.min(window.devicePixelRatio || 1, finePointer ? 2 : 1.5);
       canvas.width = Math.round(window.innerWidth * dpr);
@@ -858,7 +858,7 @@ const InteractiveWord: React.FC = () => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    /** Single teardown path — used on exit completion and on unmount. */
+    /** Single teardown path - used on exit completion and on unmount. */
     const teardown = () => {
       mode = 'idle';
       sleeping = false;
@@ -905,7 +905,7 @@ const InteractiveWord: React.FC = () => {
         return;
       }
       if (status === 'resting') {
-        // Everything is still — pause the loop (zero idle cost) until a
+        // Everything is still - pause the loop (zero idle cost) until a
         // click or resize wakes it.
         sleeping = true;
         raf = 0;
@@ -922,7 +922,7 @@ const InteractiveWord: React.FC = () => {
       sleeping = false;
     };
 
-    /** When the scatter started — release ignores the same tap gesture. */
+    /** When the scatter started - release ignores the same tap gesture. */
     let scatterTs = 0;
 
     const onRelease = (ev: PointerEvent) => {
@@ -980,7 +980,7 @@ const InteractiveWord: React.FC = () => {
     };
 
     // App-switch/tab-hide while scattered: tear down instead of keeping
-    // physics state alive in the background — the word is simply restored
+    // physics state alive in the background - the word is simply restored
     // by the time the user returns.
     const onVisibility = () => {
       if (document.hidden && mode !== 'idle') teardown();
@@ -988,7 +988,7 @@ const InteractiveWord: React.FC = () => {
 
     // Fine pointers scatter on hover; everyone (touch included) can also
     // scatter with a tap/click. `click` fires after the gesture's pointerdown,
-    // so a tap on the word can't release the effect it just started — and a
+    // so a tap on the word can't release the effect it just started - and a
     // tap anywhere else hits the window pointerdown listener to restore it.
     if (finePointer) em.addEventListener('pointerenter', scatter);
     em.addEventListener('click', scatter);

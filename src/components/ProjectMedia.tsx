@@ -7,7 +7,7 @@ interface ProjectMediaProps {
   className?: string;
 }
 
-/** True when the user asked to save data or is on a constrained connection —
+/** True when the user asked to save data or is on a constrained connection -
  *  serve posters only, never start video playback. */
 function isDataConstrained(): boolean {
   type NetInfo = { saveData?: boolean; effectiveType?: string };

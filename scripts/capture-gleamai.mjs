@@ -8,7 +8,7 @@ const CAPTURE_DIR = path.resolve('public/assets/images/capture_temp_gleamai');
 const OUTPUT_MP4 = path.resolve('public/assets/images/gleamai.mp4');
 const OUTPUT_POSTER = path.resolve('public/assets/images/gleamai-poster.webp');
 
-// Production site — avoids the Next.js dev-tools badge that local dev injects.
+// Production site - avoids the Next.js dev-tools badge that local dev injects.
 const SITE_URL = 'https://gleamai.dev';
 const API_HOST = 'api.gleamai.dev';
 
@@ -16,7 +16,7 @@ const LOGIN_EMAIL = 'codeybmv@gmail.com';
 const LOGIN_PASSWORD = 'P@ssword123';
 
 // ---------------------------------------------------------------------------
-// Mock data — every backend (localhost:3001) /api request is intercepted so
+// Mock data - every backend (localhost:3001) /api request is intercepted so
 // the dashboard renders a fully-populated, production-looking account.
 // ---------------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ const MOCK_ORG = {
 const MOCK_AGENTS = [
   {
     id: 'agt_aria',
-    name: 'Aria — Front Desk',
+    name: 'Aria - Front Desk',
     description: 'Inbound reception and appointment booking',
     systemPrompt: '',
     greeting: 'Thanks for calling Valentine Digital!',
@@ -97,7 +97,7 @@ const MOCK_AGENTS = [
   },
   {
     id: 'agt_nova',
-    name: 'Nova — Sales Outreach',
+    name: 'Nova - Sales Outreach',
     description: 'Outbound lead qualification campaigns',
     systemPrompt: '',
     greeting: 'Hi, this is Nova with Valentine Digital.',
@@ -124,7 +124,7 @@ const MOCK_AGENTS = [
   },
   {
     id: 'agt_sage',
-    name: 'Sage — Support',
+    name: 'Sage - Support',
     description: 'SMS-first customer support follow-ups',
     systemPrompt: '',
     greeting: 'Hey! Sage here from Valentine Digital.',
@@ -164,7 +164,7 @@ const MOCK_PHONE_NUMBERS = [
     isActive: true,
     createdAt: '2026-03-04T18:00:00.000Z',
     agentId: 'agt_aria',
-    agent: { id: 'agt_aria', name: 'Aria — Front Desk', voice: 'rachel' },
+    agent: { id: 'agt_aria', name: 'Aria - Front Desk', voice: 'rachel' },
   },
   {
     id: 'pn_002',
@@ -178,7 +178,7 @@ const MOCK_PHONE_NUMBERS = [
     isActive: true,
     createdAt: '2026-03-20T18:00:00.000Z',
     agentId: 'agt_nova',
-    agent: { id: 'agt_nova', name: 'Nova — Sales Outreach', voice: 'adam' },
+    agent: { id: 'agt_nova', name: 'Nova - Sales Outreach', voice: 'adam' },
   },
 ];
 
@@ -268,7 +268,7 @@ const MOCK_CALLS = [
 }));
 
 const MESSAGE_PREVIEWS = [
-  'Perfect — see you Thursday at 2pm!',
+  'Perfect - see you Thursday at 2pm!',
   'Can you send over the pricing sheet?',
   'Thanks for the quick follow-up.',
   'Yes, please reschedule me for next week.',
@@ -287,8 +287,8 @@ const MOCK_CONVERSATIONS = CONTACT_NAMES.map(([phone], i) => ({
   lastMessageAt: minutesAgo(8 + i * 47),
   messageCount: 3 + ((i * 5) % 14),
   agent: i % 3 === 0
-    ? { id: 'agt_sage', name: 'Sage — Support' }
-    : { id: 'agt_aria', name: 'Aria — Front Desk' },
+    ? { id: 'agt_sage', name: 'Sage - Support' }
+    : { id: 'agt_aria', name: 'Aria - Front Desk' },
   lastMessage: {
     id: `msg_${i}`,
     body: MESSAGE_PREVIEWS[i],

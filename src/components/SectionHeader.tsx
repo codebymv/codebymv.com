@@ -4,7 +4,7 @@ import { useInView } from '../hooks/useInView';
 interface SectionHeaderProps {
   eyebrow: string;
   title: React.ReactNode;
-  /** Extra classes on the title — e.g. mobile-only top spacing */
+  /** Extra classes on the title - e.g. mobile-only top spacing */
   titleClassName?: string;
   /** Renders beside the title on md+ (e.g. contact email) */
   endContent?: React.ReactNode;

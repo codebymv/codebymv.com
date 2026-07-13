@@ -1,7 +1,7 @@
-/** Public SoundCloud profile — swap to a playlist URL if needed. */
+/** Public SoundCloud profile - swap to a playlist URL if needed. */
 export const SOUNDCLOUD_PROFILE_URL = 'https://soundcloud.com/mattmakestunes';
 
-/** Default widget volume on first load (0–100). */
+/** Default widget volume on first load (0-100). */
 export const DEFAULT_PLAYER_VOLUME = 50;
 
 /** Accent passed to the SC embed (light-theme --accent without #). */

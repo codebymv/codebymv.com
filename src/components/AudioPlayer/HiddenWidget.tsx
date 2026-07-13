@@ -6,7 +6,7 @@ interface HiddenWidgetProps {
   visible: boolean;
 }
 
-/** Off-screen SoundCloud iframe — powers the custom player UI via Widget API. */
+/** Off-screen SoundCloud iframe - powers the custom player UI via Widget API. */
 const HiddenWidget: React.FC<HiddenWidgetProps> = ({ iframeRef, embedUrl, visible }) => {
   if (!visible) return null;
 

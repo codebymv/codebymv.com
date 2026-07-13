@@ -41,7 +41,7 @@ const PlayerBar: React.FC = () => {
 
   const title = isError
     ? "Couldn't load player"
-    : current?.title ?? (isLoading || status === 'idle' ? 'Loading…' : '—');
+    : current?.title ?? (isLoading || status === 'idle' ? 'Loading…' : '-');
 
   const handlePlay = () => {
     if (status === 'error') {

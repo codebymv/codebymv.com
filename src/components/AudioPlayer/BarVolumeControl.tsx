@@ -7,7 +7,7 @@ interface BarVolumeControlProps {
   disabled?: boolean;
 }
 
-/** Collapsed-bar volume — icon toggles a slider that folds away after adjustment. */
+/** Collapsed-bar volume - icon toggles a slider that folds away after adjustment. */
 const BarVolumeControl: React.FC<BarVolumeControlProps> = ({
   value,
   onChange,
