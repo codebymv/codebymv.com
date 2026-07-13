@@ -18,22 +18,10 @@ const Hero: React.FC = () => {
           experiences for the
         </h1>
 
-        {/* Last line + availability — stacked on mobile, one row on md+ */}
-        <div
-          className="hero-enter flex flex-col md:flex-row md:items-baseline md:justify-between md:gap-x-12 gap-y-4 mb-8 md:mb-16"
-          style={{ animationDelay: '300ms' }}
-        >
+        <div className="hero-enter mb-8 md:mb-16" style={{ animationDelay: '300ms' }}>
           <span className={headlineClass}>
             www<span className="opacity-100">.</span><span className="opacity-60">.</span><span className="opacity-30">.</span>
           </span>
-          <a
-            href="#contact"
-            className="flex items-center gap-3 font-mono text-[0.6875rem] tracking-[0.2em] uppercase md:shrink-0 md:pb-2 transition-colors duration-200 hover:text-[color:var(--accent)]"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            <span className="pulse-dot" />
-            Open to new projects
-          </a>
         </div>
 
         {/* Baseline row */}
@@ -43,6 +31,13 @@ const Hero: React.FC = () => {
             <span style={{ color: 'var(--text-secondary)' }}>Software Engineer</span>
             <span>Audio Engineer</span>
             <span>Tucson, AZ</span>
+            <a
+              href="#contact"
+              className="transition-colors duration-200 hover:text-[color:var(--accent)]"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Open to new projects
+            </a>
           </div>
         </div>
       </div>

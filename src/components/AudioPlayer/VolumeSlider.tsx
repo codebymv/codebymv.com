@@ -19,7 +19,7 @@ const VolumeSlider: React.FC<VolumeSliderProps> = ({
 }) => {
   if (inline) {
     return (
-      <div className="flex items-center gap-2 shrink-0 w-full md:w-auto md:min-w-[7.5rem] md:max-w-[9rem]">
+      <div className="flex items-center gap-2 flex-1 min-w-0 md:flex-none md:min-w-[7.5rem] md:max-w-[9rem]">
         <Volume2 size={16} className="shrink-0" style={{ color: 'var(--text-muted)' }} />
         <input
           id={id}

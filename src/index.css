@@ -166,23 +166,6 @@ code, pre, .font-mono {
 }
 
 /* ========================================
-   Availability pulse dot
-   ======================================== */
-
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.25; }
-}
-
-.pulse-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 9999px;
-  background-color: var(--accent);
-  animation: pulseDot 2.4s ease-in-out infinite;
-}
-
-/* ========================================
    Hero entry — one orchestrated reveal
    ======================================== */
 
@@ -272,10 +255,6 @@ button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  .pulse-dot {
-    animation: none;
   }
 
   .hero-enter {
