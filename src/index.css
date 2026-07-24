@@ -24,6 +24,8 @@
   --border-strong: rgba(22, 22, 22, 0.18);
   --player-bar-height: 4rem;
   --player-panel-max-height: min(50vh, 26.25rem);
+  /* Clears fixed nav (py-5 + logo) on in-page hash / focus scrolls */
+  --scroll-padding-top: 5.5rem;
 }
 
 .dark-theme {
@@ -48,6 +50,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--scroll-padding-top);
 }
 
 body {
@@ -233,8 +236,59 @@ code, pre, .font-mono {
    Focus visibility
    ======================================== */
 
+/* Keyboard-only rings for clickable controls. Text fields keep their own
+   underline accent on :focus (browsers match :focus-visible on mouse into
+   inputs, which would otherwise double-up an outline on click). Range
+   inputs below strip the UA outline — restore a ring here. */
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+.player-progress:focus-visible,
+.player-volume:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Skip link: first in tab order, revealed only on keyboard focus.
+   Fixed + high z so it sits above the sticky nav when activated. */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.625rem 1rem;
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  color: var(--bg-primary);
+  background-color: var(--accent);
+  border-radius: 2px;
+  transform: translateY(-150%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
+}
+
+/* Hash / skip targets: allow programmatic focus without a focus ring flash
+   on every in-page jump; outline still shows for keyboard :focus-visible. */
+:is(#main-content, #home, #work, #capabilities, #about, #contact):focus {
+  outline: none;
+}
+
+:is(#main-content, #home, #work, #capabilities, #about, #contact):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Contact submit alert/status: programmatically focused after fetch */
+#contact-submit-error:focus,
+#contact-submit-success:focus {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -272,7 +326,10 @@ button:focus-visible {
     animation: none;
   }
 
-  * {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }

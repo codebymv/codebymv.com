@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import SectionHeader from './SectionHeader';
 import { useInView } from '../hooks/useInView';
 
@@ -14,6 +14,8 @@ interface FormErrors {
   message?: string;
 }
 
+const FIELD_ORDER = ['name', 'email', 'message'] as const;
+
 const Contact: React.FC = () => {
   const { ref, inView } = useInView<HTMLDivElement>();
   const [form, setForm] = useState<FormState>({ name: '', email: '', message: '' });
@@ -21,20 +23,61 @@ const Contact: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const focusFieldRef = useRef<(typeof FIELD_ORDER)[number] | null>(null);
+  const returnFocusAfterSuccessRef = useRef(false);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+  const submitErrorRef = useRef<HTMLParagraphElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
 
-  const validate = (): boolean => {
-    const e: FormErrors = {};
-    if (!form.name.trim()) e.name = 'Name is required';
-    if (!form.email.trim()) e.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Invalid email';
-    if (!form.message.trim()) e.message = 'Message is required';
-    setErrors(e);
-    return Object.keys(e).length === 0;
+  useLayoutEffect(() => {
+    const key = focusFieldRef.current;
+    if (!key || !errors[key]) return;
+    focusFieldRef.current = null;
+    if (key === 'name') nameRef.current?.focus();
+    else if (key === 'email') emailRef.current?.focus();
+    else messageRef.current?.focus();
+  }, [errors]);
+
+  // Network/submit failures: move focus to the alert so keyboard users land on it
+  // (role="alert" alone can miss after async; field errors already focus above).
+  useLayoutEffect(() => {
+    if (!submitError) return;
+    submitErrorRef.current?.focus();
+  }, [submitError]);
+
+  // Success replaces the focused submit control — park focus on the status, then
+  // restore to the first field only if focus was still on that status when it unmounts.
+  useLayoutEffect(() => {
+    if (submitted) {
+      successRef.current?.focus();
+      return;
+    }
+    if (!returnFocusAfterSuccessRef.current) return;
+    returnFocusAfterSuccessRef.current = false;
+    nameRef.current?.focus();
+  }, [submitted]);
+
+  const validate = (): FormErrors => {
+    const next: FormErrors = {};
+    if (!form.name.trim()) next.name = 'Name is required';
+    if (!form.email.trim()) next.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = 'Invalid email';
+    if (!form.message.trim()) next.message = 'Message is required';
+    setErrors(next);
+    return next;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    const nextErrors = validate();
+    const firstInvalid = FIELD_ORDER.find((key) => nextErrors[key]);
+    if (firstInvalid) {
+      focusFieldRef.current = firstInvalid;
+      return;
+    }
+
     setLoading(true);
     setSubmitError(null);
 
@@ -51,7 +94,13 @@ const Contact: React.FC = () => {
         setLoading(false);
         setSubmitted(true);
         setForm({ name: '', email: '', message: '' });
-        setTimeout(() => setSubmitted(false), 5000);
+        setTimeout(() => {
+          const hadFocus = Boolean(
+            successRef.current?.contains(document.activeElement),
+          );
+          if (hadFocus) returnFocusAfterSuccessRef.current = true;
+          setSubmitted(false);
+        }, 5000);
       })
       .catch(() => {
         setLoading(false);
@@ -68,7 +117,7 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-24 md:py-32 cv-auto">
+    <section id="contact" tabIndex={-1} className="py-24 md:py-32 cv-auto">
       <div className="section-container">
         <SectionHeader
           eyebrow="Contact"
@@ -125,7 +174,14 @@ const Contact: React.FC = () => {
             {/* Form */}
             <div className="lg:col-span-7">
               {submitted ? (
-                <div className="flex flex-col justify-center h-full py-16">
+                <div
+                  ref={successRef}
+                  id="contact-submit-success"
+                  tabIndex={-1}
+                  className="flex flex-col justify-center h-full py-16"
+                  role="status"
+                  aria-live="polite"
+                >
                   <p className="text-2xl font-medium tracking-[-0.01em] mb-2">Message sent.</p>
                   <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
                     I'll get back to you soon.
@@ -140,6 +196,7 @@ const Contact: React.FC = () => {
                   data-netlify-honeypot="bot-field"
                   onSubmit={handleSubmit}
                   className="space-y-8"
+                  noValidate
                 >
                   <input type="hidden" name="form-name" value="portfolio-contact" />
                   <div className="hidden">
@@ -154,6 +211,7 @@ const Contact: React.FC = () => {
                         Name
                       </label>
                       <input
+                        ref={nameRef}
                         type="text"
                         id="name"
                         name="name"
@@ -161,9 +219,15 @@ const Contact: React.FC = () => {
                         onChange={handleChange}
                         className="input-underline"
                         placeholder="Your name"
+                        aria-invalid={errors.name ? true : undefined}
+                        aria-describedby={errors.name ? 'name-error' : undefined}
                       />
                       {errors.name && (
-                        <p className="font-mono text-xs mt-2" style={{ color: 'var(--accent)' }}>
+                        <p
+                          id="name-error"
+                          className="font-mono text-xs mt-2"
+                          style={{ color: 'var(--accent)' }}
+                        >
                           {errors.name}
                         </p>
                       )}
@@ -174,6 +238,7 @@ const Contact: React.FC = () => {
                         Email
                       </label>
                       <input
+                        ref={emailRef}
                         type="email"
                         id="email"
                         name="email"
@@ -181,9 +246,15 @@ const Contact: React.FC = () => {
                         onChange={handleChange}
                         className="input-underline"
                         placeholder="your@email.com"
+                        aria-invalid={errors.email ? true : undefined}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
                       />
                       {errors.email && (
-                        <p className="font-mono text-xs mt-2" style={{ color: 'var(--accent)' }}>
+                        <p
+                          id="email-error"
+                          className="font-mono text-xs mt-2"
+                          style={{ color: 'var(--accent)' }}
+                        >
                           {errors.email}
                         </p>
                       )}
@@ -195,6 +266,7 @@ const Contact: React.FC = () => {
                       Message
                     </label>
                     <textarea
+                      ref={messageRef}
                       id="message"
                       name="message"
                       value={form.message}
@@ -202,16 +274,29 @@ const Contact: React.FC = () => {
                       rows={4}
                       className="input-underline resize-none"
                       placeholder="Tell me about your project..."
+                      aria-invalid={errors.message ? true : undefined}
+                      aria-describedby={errors.message ? 'message-error' : undefined}
                     />
                     {errors.message && (
-                      <p className="font-mono text-xs mt-2" style={{ color: 'var(--accent)' }}>
+                      <p
+                        id="message-error"
+                        className="font-mono text-xs mt-2"
+                        style={{ color: 'var(--accent)' }}
+                      >
                         {errors.message}
                       </p>
                     )}
                   </div>
 
                   {submitError && (
-                    <p className="font-mono text-xs" style={{ color: 'var(--accent)' }} role="alert">
+                    <p
+                      ref={submitErrorRef}
+                      id="contact-submit-error"
+                      tabIndex={-1}
+                      className="font-mono text-xs"
+                      style={{ color: 'var(--accent)' }}
+                      role="alert"
+                    >
                       {submitError}
                     </p>
                   )}
@@ -219,6 +304,7 @@ const Contact: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
+                    aria-describedby={submitError ? 'contact-submit-error' : undefined}
                     className="font-body font-medium text-sm tracking-wide px-10 py-4 transition-opacity duration-200 hover:opacity-80 disabled:opacity-50"
                     style={{
                       backgroundColor: 'var(--text-primary)',

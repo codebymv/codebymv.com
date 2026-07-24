@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useAudioPlayer } from '../../contexts/AudioPlayerContext';
 import { Play, Pause, SkipBack, SkipForward, ChevronDown, ExternalLink } from '../icons';
 import VolumeSlider from './VolumeSlider';
@@ -10,6 +10,8 @@ function formatTime(ms: number): string {
   const s = total % 60;
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
+
+const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled])';
 
 const PlayerPanel: React.FC = () => {
   const {
@@ -32,12 +34,73 @@ const PlayerPanel: React.FC = () => {
   const [seeking, setSeeking] = useState(false);
   const [seekValue, setSeekValue] = useState(0);
   const scrimRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const collapseButtonRef = useRef<HTMLButtonElement>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
 
   const isPlaying = status === 'playing';
   const displayPosition = seeking ? seekValue : progress.position;
   const canSkip = status === 'ready' || status === 'playing' || status === 'paused';
   const atQueueStart = queue.length > 0 && currentIndex <= 0;
   const atQueueEnd = queue.length > 0 && currentIndex >= queue.length - 1;
+
+  const closePanel = useCallback(() => {
+    setExpanded(false);
+    // Restore focus to the expand control after the panel unmounts
+    requestAnimationFrame(() => {
+      const stored = restoreFocusRef.current;
+      const opener =
+        (stored?.isConnected ? stored : null) ??
+        document.querySelector<HTMLElement>('[aria-controls="player-panel"]');
+      opener?.focus();
+      restoreFocusRef.current = null;
+    });
+  }, [setExpanded]);
+
+  // Expanded panel uses a full-viewport scrim (modal-like). Mirror mobile nav:
+  // initial focus, Escape to dismiss, and Tab cycle within the panel.
+  useLayoutEffect(() => {
+    if (!expanded) return;
+
+    const active = document.activeElement;
+    if (
+      active instanceof HTMLElement &&
+      active.getAttribute('aria-controls') === 'player-panel'
+    ) {
+      restoreFocusRef.current = active;
+    }
+    collapseButtonRef.current?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closePanel();
+        return;
+      }
+
+      if (e.key !== 'Tab') return;
+
+      const panel = panelRef.current;
+      if (!panel) return;
+
+      const focusable = panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [expanded, closePanel]);
 
   const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSeeking(true);
@@ -51,9 +114,9 @@ const PlayerPanel: React.FC = () => {
 
   const handleScrimClick = useCallback(
     (e: React.MouseEvent) => {
-      if (e.target === scrimRef.current) setExpanded(false);
+      if (e.target === scrimRef.current) closePanel();
     },
-    [setExpanded]
+    [closePanel]
   );
 
   if (!expanded) return null;
@@ -69,7 +132,11 @@ const PlayerPanel: React.FC = () => {
       />
 
       <div
+        ref={panelRef}
         id="player-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Now playing"
         className="player-panel fixed left-0 right-0 z-[46] border-t border-[color:var(--border)]"
         style={{
           backgroundColor: 'var(--bg-elevated)',
@@ -81,8 +148,9 @@ const PlayerPanel: React.FC = () => {
             <div className="flex items-center justify-between gap-4 mb-3">
               <p className="eyebrow">Now playing</p>
               <button
+                ref={collapseButtonRef}
                 type="button"
-                onClick={() => setExpanded(false)}
+                onClick={closePanel}
                 className="p-2 shrink-0 transition-colors duration-200 hover:text-[color:var(--accent)]"
                 style={{ color: 'var(--text-secondary)' }}
                 aria-label="Collapse player"

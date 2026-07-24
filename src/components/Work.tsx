@@ -31,8 +31,8 @@ const projects: Project[] = [
   {
     title: 'SampleSeeker.com',
     description:
-      'A sophisticated sample shuffling workspace that functions like a slot machine for music producers to discover obscure audio samples via YouTube with deep genre, era, and obscurity filters.',
-    outcome: 'A discovery workspace that turns obscure YouTube audio into usable producer samples.',
+      'A sample shuffling workspace that works like a slot machine for producers — dig through obscure YouTube audio with deep genre, era, and obscurity filters.',
+    outcome: 'Turns obscure YouTube audio into usable producer samples.',
     media: 'sampleseeker',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'PostgreSQL'],
     link: 'https://sampleseeker.com',
@@ -41,18 +41,18 @@ const projects: Project[] = [
   {
     title: 'GleamAI.dev',
     description:
-      'An AI voice agent platform for businesses. Configure conversational agents that handle calls and SMS over Twilio, with live analytics, campaign management, and usage-based billing.',
-    outcome: 'Voice agents for calls and SMS with live analytics and usage-based billing.',
+      'AI voice and SMS agents that call leads in minutes, answer inbound 24/7, qualify and book, then sync to your CRM — with live analytics and usage-based billing.',
+    outcome: 'Speed-to-lead voice & SMS agents with analytics and CRM sync.',
     media: 'gleamai',
-    tags: ['Next.js (React)', 'TypeScript', 'Tailwind CSS', 'Recharts'],
+    tags: ['Next.js (React)', 'TypeScript', 'Tailwind CSS', 'Twilio', 'Recharts'],
     link: 'https://gleamai.dev',
     year: '2026',
   },
   {
     title: 'FlashCore.dev',
     description:
-      'A high fidelity web gaming hub and instant-play arcade platform designed to revitalize browser-based games with integrated leaderboards, player achievements, and optimized WASM game packaging.',
-    outcome: 'Instant-play browser arcade with leaderboards, achievements, and WASM packaging.',
+      'A browser gaming hub with a growing instant-play library — leaderboards, achievements, and optimized packaging across arcade, puzzle, and deeper campaign titles.',
+    outcome: 'Instant-play browser arcade with leaderboards, achievements, and a multi-title library.',
     media: 'flashcore',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Supabase', 'Vite'],
     link: 'https://flashcore.dev',
@@ -61,8 +61,8 @@ const projects: Project[] = [
   {
     title: 'Itemize.cloud',
     description:
-      'AI-assisted organization platform for managing projects, noting tasks, and streamlining workflows.',
-    outcome: 'AI-assisted project and task organization for faster day-to-day workflows.',
+      'A CRM and workspace platform that brings contacts, deals, canvases, and automations together so teams stop juggling spreadsheets and disconnected tools.',
+    outcome: 'Contacts, pipelines, and canvases in one AI-assisted workspace.',
     media: 'itemize',
     tags: ['React', 'TypeScript', 'Gemini API'],
     link: 'https://itemize.cloud',
@@ -80,9 +80,11 @@ const projects: Project[] = [
   },
   {
     title: 'MixFade.com & MixFade Desktop',
-    description: 'Analytical tool with a comparative audio playback engine and sleek A/B metering.',
+    description:
+      'A free Windows desktop reference tool with DJ-style A/B playback, real-time metering, and broadcast-minded analysis — plus a native VST plugin path in active development.',
+    outcome: 'Desktop A/B reference analysis; native VST shell underway.',
     media: 'mixfade',
-    tags: ['Electron', 'AWS S3', 'NSIS'],
+    tags: ['Electron', 'React', 'TypeScript', 'JUCE', 'AWS S3'],
     link: 'https://mixfade.com',
     year: '2025',
   },
@@ -196,7 +198,7 @@ const Work: React.FC = () => {
   const [earlierOpen, setEarlierOpen] = useState(false);
 
   return (
-    <section id="work" className="py-10 md:py-24">
+    <section id="work" tabIndex={-1} className="py-10 md:py-24">
       <div className="section-container">
         <SectionHeader eyebrow="Projects" title="Selected Work" titleClassName="mt-3 md:mt-0" />
 
@@ -238,6 +240,7 @@ const Work: React.FC = () => {
                     key={project.title}
                     project={project}
                     index={featuredProjects.length + i}
+                    showOutcome={Boolean(project.outcome)}
                   />
                 ))}
               </div>

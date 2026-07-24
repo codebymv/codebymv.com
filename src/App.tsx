@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AudioPlayerProvider } from './contexts/AudioPlayerContext';
+import { useHashTargetFocus } from './hooks/useHashTargetFocus';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 // Hero is the LCP - load it eagerly to avoid a chunk round-trip before first
@@ -20,6 +21,8 @@ const Fallback = () => (
 );
 
 function App() {
+  useHashTargetFocus();
+
   return (
     <div
       className="min-h-screen"
@@ -29,23 +32,19 @@ function App() {
         paddingBottom: 'calc(var(--player-bar-height) + env(safe-area-inset-bottom, 0px))',
       }}
     >
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <Navbar />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Hero />
 
+        {/* One boundary for below-fold sections — avoids stacked spinner flashes
+            as each lazy chunk settles. */}
         <Suspense fallback={<Fallback />}>
           <Work />
-        </Suspense>
-
-        <Suspense fallback={<Fallback />}>
           <Capabilities />
-        </Suspense>
-
-        <Suspense fallback={<Fallback />}>
           <About />
-        </Suspense>
-
-        <Suspense fallback={<Fallback />}>
           <Contact />
         </Suspense>
       </main>

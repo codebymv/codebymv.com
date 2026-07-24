@@ -15,12 +15,26 @@ const BarVolumeControl: React.FC<BarVolumeControlProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const sliderRef = useRef<HTMLInputElement>(null);
   const foldTimerRef = useRef<number>();
+
+  const closeVolume = useCallback((restoreFocus: boolean) => {
+    window.clearTimeout(foldTimerRef.current);
+    setOpen(false);
+    if (restoreFocus) {
+      requestAnimationFrame(() => buttonRef.current?.focus());
+    }
+  }, []);
 
   const scheduleFold = useCallback(() => {
     window.clearTimeout(foldTimerRef.current);
-    foldTimerRef.current = window.setTimeout(() => setOpen(false), 450);
-  }, []);
+    foldTimerRef.current = window.setTimeout(() => {
+      // Slider becomes untabbable when folded; keep keyboard focus on the toggle.
+      const focusInside = Boolean(rootRef.current?.contains(document.activeElement));
+      closeVolume(focusInside);
+    }, 450);
+  }, [closeVolume]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(Number(e.target.value));
@@ -34,11 +48,29 @@ const BarVolumeControl: React.FC<BarVolumeControlProps> = ({
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!rootRef.current?.contains(e.target as Node)) {
+        // Outside click: leave focus where the browser puts it.
+        closeVolume(false);
+      }
     };
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [open]);
+  }, [open, closeVolume]);
+
+  // Mirror panel/nav: move focus into the disclosure, Escape dismisses + restores.
+  useEffect(() => {
+    if (!open) return;
+
+    sliderRef.current?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      closeVolume(true);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, closeVolume]);
 
   useEffect(() => () => window.clearTimeout(foldTimerRef.current), []);
 
@@ -51,6 +83,7 @@ const BarVolumeControl: React.FC<BarVolumeControlProps> = ({
         aria-hidden={!open}
       >
         <input
+          ref={sliderRef}
           id="player-volume-bar"
           type="range"
           min={0}
@@ -71,8 +104,12 @@ const BarVolumeControl: React.FC<BarVolumeControlProps> = ({
       </div>
 
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (open) closeVolume(false);
+          else setOpen(true);
+        }}
         disabled={disabled}
         className="p-2.5 transition-colors duration-200 hover:text-[color:var(--accent)] disabled:opacity-50"
         style={{ color: open ? 'var(--text-primary)' : 'var(--text-secondary)' }}

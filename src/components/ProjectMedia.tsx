@@ -20,25 +20,30 @@ function isDataConstrained(): boolean {
  * Looping project preview. MP4 instead of GIF (~10x smaller, hardware
  * decoded), playback only while on screen, and the poster itself is only
  * fetched once the card nears the viewport (poster attributes aren't
- * natively lazy). Honors prefers-reduced-motion and Save-Data by staying on
- * the poster frame.
+ * natively lazy). The MP4 source is attached only when near so below-fold
+ * cards don't even discover the media URL. Honors prefers-reduced-motion
+ * and Save-Data by staying on the poster frame.
  */
 const ProjectMedia: React.FC<ProjectMediaProps> = ({ src, poster, label, className }) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
+  const [posterOnly, setPosterOnly] = useState(false);
 
   useEffect(() => {
     const video = ref.current;
     if (!video) return;
-    const posterOnly =
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches || isDataConstrained();
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const constrained = isDataConstrained();
+    const stayOnPoster = reduceMotion || constrained;
+    setPosterOnly(stayOnPoster);
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setNear(true);
-          if (!posterOnly) video.play().catch(() => {});
-        } else if (!posterOnly) {
+          if (!stayOnPoster) video.play().catch(() => {});
+        } else if (!stayOnPoster) {
           video.pause();
         }
       },
@@ -61,7 +66,7 @@ const ProjectMedia: React.FC<ProjectMediaProps> = ({ src, poster, label, classNa
       disablePictureInPicture
       aria-label={label}
     >
-      <source src={src} type="video/mp4" />
+      {near && !posterOnly ? <source src={src} type="video/mp4" /> : null}
     </video>
   );
 };

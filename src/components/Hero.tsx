@@ -6,7 +6,7 @@ const headlineClass =
 
 const Hero: React.FC = () => {
   return (
-    <section id="home">
+    <section id="home" tabIndex={-1}>
       <div className="section-container w-full pt-24 md:pt-40 pb-4">
         {/* Statement */}
         <h1

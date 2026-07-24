@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Sun, Moon, Menu, X } from './icons';
 import LocalTime from './LocalTime';
@@ -13,6 +13,9 @@ const Wordmark: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
       <img
         src="/assets/images/mv full logo_transparent.png"
         alt="codebymv"
+        width={160}
+        height={32}
+        decoding="async"
         className="h-full w-auto object-contain"
         style={{ filter: theme === 'light' ? 'invert(0.85) brightness(0.8)' : 'none' }}
       />
@@ -47,7 +50,13 @@ const Navbar: React.FC = () => {
     requestAnimationFrame(() => menuButtonRef.current?.focus());
   }, []);
 
-  useEffect(() => {
+  // Closed overlay stays in the DOM for opacity transitions. Without inert,
+  // its links/buttons remain tabbable despite aria-hidden + pointer-events-none.
+  useLayoutEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+
+    overlay.inert = !menuOpen;
     if (!menuOpen) return;
 
     closeButtonRef.current?.focus();
@@ -59,9 +68,9 @@ const Navbar: React.FC = () => {
         return;
       }
 
-      if (e.key !== 'Tab' || !overlayRef.current) return;
+      if (e.key !== 'Tab') return;
 
-      const focusable = overlayRef.current.querySelectorAll<HTMLElement>(
+      const focusable = overlay.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled])'
       );
       if (focusable.length === 0) return;

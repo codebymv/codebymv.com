@@ -7,7 +7,7 @@ const About: React.FC = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <section id="about" className="py-24 md:py-32 cv-auto">
+    <section id="about" tabIndex={-1} className="py-24 md:py-32 cv-auto">
       <div className="section-container">
         <SectionHeader eyebrow="About" title="A little background" />
 
@@ -24,6 +24,7 @@ const About: React.FC = () => {
                 width={800}
                 height={1000}
                 loading="lazy"
+                decoding="async"
                 onLoad={() => setImageLoaded(true)}
                 className={`w-full h-full object-cover transition-opacity duration-700 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
@@ -67,7 +68,8 @@ const About: React.FC = () => {
                 >
                   MixFade
                 </a>
-                , a comparative A/B analysis app I designed and built from scratch. VST coming soon.
+                , a comparative A/B analysis desktop app I designed and built from scratch, with a
+                native VST plugin in active development.
               </p>
             </div>
 

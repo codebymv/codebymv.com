@@ -25,7 +25,7 @@ const groups: Group[] = [
   },
   {
     label: 'Tools',
-    items: ['OOP', 'SCRUM', 'Git', 'Docker', 'Electron', 'Forgejo'],
+    items: ['OOP', 'SCRUM', 'Git', 'Docker', 'Electron', 'JUCE', 'Forgejo'],
   },
   {
     label: 'Models & Harnesses',
@@ -71,7 +71,7 @@ const Capabilities: React.FC = () => {
   const { ref, inView } = useInView<HTMLDivElement>();
 
   return (
-    <section id="capabilities" className="py-24 md:py-32 cv-auto">
+    <section id="capabilities" tabIndex={-1} className="py-24 md:py-32 cv-auto">
       <div className="section-container">
         <SectionHeader eyebrow="Capabilities" title="What I work with" />
 
