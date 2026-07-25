@@ -125,6 +125,7 @@ const Navbar: React.FC = () => {
               className="p-2 transition-colors duration-200 hover:text-[color:var(--accent)]"
               style={{ color: 'var(--text-secondary)' }}
               aria-label="Toggle theme"
+              aria-pressed={theme === 'dark'}
             >
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
@@ -196,6 +197,7 @@ const Navbar: React.FC = () => {
               className="p-3 -mr-3"
               style={{ color: 'var(--text-secondary)' }}
               aria-label="Toggle theme"
+              aria-pressed={theme === 'dark'}
             >
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
