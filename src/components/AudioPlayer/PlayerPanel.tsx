@@ -107,7 +107,10 @@ const PlayerPanel: React.FC = () => {
     setSeekValue(Number(e.target.value));
   };
 
+  // Only commit after onChange flipped seeking — bare keyup/mouseup on an
+  // untouched slider would otherwise seekTo(seekValue) while it is still 0.
   const handleSeekCommit = () => {
+    if (!seeking) return;
     seek(seekValue);
     setSeeking(false);
   };
