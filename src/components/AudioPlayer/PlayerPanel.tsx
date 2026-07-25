@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useAudioPlayer } from '../../contexts/AudioPlayerContext';
 import { Play, Pause, SkipBack, SkipForward, ChevronDown, ExternalLink } from '../icons';
 import VolumeSlider from './VolumeSlider';
@@ -33,6 +33,8 @@ const PlayerPanel: React.FC = () => {
 
   const [seeking, setSeeking] = useState(false);
   const [seekValue, setSeekValue] = useState(0);
+  const seekingRef = useRef(false);
+  const seekValueRef = useRef(0);
   const scrimRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const collapseButtonRef = useRef<HTMLButtonElement>(null);
@@ -103,17 +105,36 @@ const PlayerPanel: React.FC = () => {
   }, [expanded, closePanel]);
 
   const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const next = Number(e.target.value);
+    seekingRef.current = true;
+    seekValueRef.current = next;
     setSeeking(true);
-    setSeekValue(Number(e.target.value));
+    setSeekValue(next);
   };
 
   // Only commit after onChange flipped seeking — bare keyup/mouseup on an
   // untouched slider would otherwise seekTo(seekValue) while it is still 0.
-  const handleSeekCommit = () => {
-    if (!seeking) return;
-    seek(seekValue);
+  // Refs keep commit correct across the same-tick change→keyup sequence and
+  // when pointerup lands outside the range input (input never sees mouseup).
+  const handleSeekCommit = useCallback(() => {
+    if (!seekingRef.current) return;
+    seekingRef.current = false;
+    seek(seekValueRef.current);
     setSeeking(false);
-  };
+  }, [seek]);
+
+  // Drag can end outside the thumb; window capture still commits and unsticks
+  // the frozen displayPosition.
+  useEffect(() => {
+    if (!seeking) return;
+    const onRelease = () => handleSeekCommit();
+    window.addEventListener('pointerup', onRelease);
+    window.addEventListener('pointercancel', onRelease);
+    return () => {
+      window.removeEventListener('pointerup', onRelease);
+      window.removeEventListener('pointercancel', onRelease);
+    };
+  }, [seeking, handleSeekCommit]);
 
   const handleScrimClick = useCallback(
     (e: React.MouseEvent) => {
