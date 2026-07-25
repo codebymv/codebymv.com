@@ -58,6 +58,8 @@ const BarVolumeControl: React.FC<BarVolumeControlProps> = ({
   }, [open, closeVolume]);
 
   // Mirror panel/nav: move focus into the disclosure, Escape dismisses + restores.
+  // Capture + stopImmediatePropagation so Escape only folds volume when open —
+  // otherwise the expanded player dialog (bubble listener) collapses too.
   useEffect(() => {
     if (!open) return;
 
@@ -66,10 +68,11 @@ const BarVolumeControl: React.FC<BarVolumeControlProps> = ({
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
       e.preventDefault();
+      e.stopImmediatePropagation();
       closeVolume(true);
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
   }, [open, closeVolume]);
 
   useEffect(() => () => window.clearTimeout(foldTimerRef.current), []);

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useRef, useState, useCallback } from 'react';
 import {
   useSoundCloudWidget,
   type PlayerStatus,
@@ -43,15 +43,6 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     },
     [widget]
   );
-
-  useEffect(() => {
-    if (!expanded) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setExpandedState(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [expanded]);
 
   const value: AudioPlayerContextValue = {
     status: widget.status,
