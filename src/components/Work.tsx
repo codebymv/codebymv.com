@@ -3,6 +3,7 @@ import SectionHeader from './SectionHeader';
 import ProjectMedia from './ProjectMedia';
 import { ArrowUpRight } from './icons';
 import { useInView } from '../hooks/useInView';
+import FeaturedCaseStudy from './FeaturedCaseStudy';
 
 interface Project {
   title: string;
@@ -122,7 +123,7 @@ const projects: Project[] = [
   // },
 ];
 
-const featuredProjects = projects.filter((p) => FEATURED_TITLES.has(p.title)).sort(byNewestThenTitle);
+const featuredProjects = projects.filter((p) => FEATURED_TITLES.has(p.title) && p.title !== 'TucsonLovesMusic.com').sort(byNewestThenTitle);
 const earlierProjects = projects.filter((p) => !FEATURED_TITLES.has(p.title)).sort(byNewestThenTitle);
 
 const WorkEntry: React.FC<{
@@ -203,14 +204,13 @@ const Work: React.FC = () => {
         <SectionHeader eyebrow="Projects" title="Selected Work" titleClassName="mt-3 md:mt-0" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16 md:gap-y-20">
+          <FeaturedCaseStudy />
           {featuredProjects.map((project, i) => (
             <WorkEntry
               key={project.title}
               project={project}
-              index={i}
+              index={i + 1}
               showOutcome
-              // Odd featured count: first entry spans a full top row
-              featuredLayout={featuredProjects.length % 2 === 1 && i === 0}
             />
           ))}
         </div>
@@ -239,7 +239,7 @@ const Work: React.FC = () => {
                   <WorkEntry
                     key={project.title}
                     project={project}
-                    index={featuredProjects.length + i}
+                    index={featuredProjects.length + i + 1}
                     showOutcome={Boolean(project.outcome)}
                   />
                 ))}
